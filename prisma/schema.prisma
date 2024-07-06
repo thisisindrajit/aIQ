@@ -1,14 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-
-  // Enable if using driver adapters
-  // previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -17,13 +8,143 @@ datasource db {
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
-model messages {
-  text   String
-  author String
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model list_notification_types {
+  notification_type  String               @db.VarChar
+  xata_id            String               @unique(map: "list_notification_types__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version       Int                  @default(0)
+  xata_createdat     DateTime             @default(now()) @db.Timestamptz(6)
+  xata_updatedat     DateTime             @default(now()) @db.Timestamptz(6)
+  user_notifications user_notifications[]
+}
 
-  // xata fields
-  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
-  xata_id        String   @unique(map: "_pgroll_users_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model list_reward_reasons {
+  reward_reason  String    @db.VarChar
+  xata_id        String    @unique(map: "list_reward_reasons__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int       @default(0)
+  xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  rewards        rewards[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model list_snippet_types {
+  snippet_type   String   @db.VarChar
+  xata_id        String   @unique(map: "list_snippet_types__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_version   Int      @default(0)
   xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model rewards {
+  rewarded_user_id    String?
+  rewarded_xp         Int
+  rewarded_reason     String?
+  xata_version        Int                  @default(0)
+  xata_createdat      DateTime             @default(now()) @db.Timestamptz(6)
+  xata_updatedat      DateTime             @default(now()) @db.Timestamptz(6)
+  xata_id             String               @unique(map: "rewards__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  list_reward_reasons list_reward_reasons? @relation(fields: [rewarded_reason], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  users               users?               @relation(fields: [rewarded_user_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model snippet_likes {
+  snippet_id     String?
+  liked_by       String?
+  xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_id        String    @unique(map: "snippet_likes__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int       @default(0)
+  xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  users          users?    @relation(fields: [liked_by], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  snippets       snippets? @relation(fields: [snippet_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model snippet_notes {
+  snippet_id     String?
+  note           String
+  noted_by       String?
+  xata_id        String    @unique(map: "snippet_notes__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int       @default(0)
+  xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  users          users?    @relation(fields: [noted_by], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  snippets       snippets? @relation(fields: [snippet_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model snippet_saves {
+  snippet_id     String?
+  saved_by       String?
+  xata_updatedat DateTime  @default(now()) @db.Timestamptz(6)
+  xata_id        String    @unique(map: "snippet_saves__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int       @default(0)
+  xata_createdat DateTime  @default(now()) @db.Timestamptz(6)
+  users          users?    @relation(fields: [saved_by], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  snippets       snippets? @relation(fields: [snippet_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model snippet_type_and_data_mapping {
+  snippet_id     String?
+  type           String?
+  data           Json
+  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+  xata_id        String   @unique(map: "snippet_type_and_data_mapping__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version   Int      @default(0)
+  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model snippets {
+  generated_by_ai Boolean?
+  likes_count     BigInt          @default(0)
+  requested_by    String?
+  xata_version    Int             @default(0)
+  xata_createdat  DateTime        @default(now()) @db.Timestamptz(6)
+  xata_updatedat  DateTime        @default(now()) @db.Timestamptz(6)
+  xata_id         String          @unique(map: "snippets__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  snippet_likes   snippet_likes[]
+  snippet_notes   snippet_notes[]
+  snippet_saves   snippet_saves[]
+  users           users?          @relation(fields: [requested_by], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model user_notifications {
+  notification_creator                                  String?
+  notification_receiver                                 String?
+  notification_type                                     String?
+  notification                                          String
+  is_read                                               Boolean?
+  is_cleared                                            Boolean?
+  xata_createdat                                        DateTime                 @default(now()) @db.Timestamptz(6)
+  xata_updatedat                                        DateTime                 @default(now()) @db.Timestamptz(6)
+  xata_id                                               String                   @unique(map: "user_notifications__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version                                          Int                      @default(0)
+  users_user_notifications_notification_creatorTousers  users?                   @relation("user_notifications_notification_creatorTousers", fields: [notification_creator], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  users_user_notifications_notification_receiverTousers users?                   @relation("user_notifications_notification_receiverTousers", fields: [notification_receiver], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  list_notification_types                               list_notification_types? @relation(fields: [notification_type], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  first_name                                                         String               @default("aIQ User") @db.VarChar
+  last_name                                                          String?              @db.VarChar
+  email                                                              String               @db.VarChar
+  total_rewarded_xp                                                  BigInt               @default(0)
+  xata_createdat                                                     DateTime             @default(now()) @db.Timestamptz(6)
+  xata_updatedat                                                     DateTime             @default(now()) @db.Timestamptz(6)
+  xata_id                                                            String               @unique(map: "users__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version                                                       Int                  @default(0)
+  rewards                                                            rewards[]
+  snippet_likes                                                      snippet_likes[]
+  snippet_notes                                                      snippet_notes[]
+  snippet_saves                                                      snippet_saves[]
+  snippets                                                           snippets[]
+  user_notifications_user_notifications_notification_creatorTousers  user_notifications[] @relation("user_notifications_notification_creatorTousers")
+  user_notifications_user_notifications_notification_receiverTousers user_notifications[] @relation("user_notifications_notification_receiverTousers")
 }

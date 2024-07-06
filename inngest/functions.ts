@@ -1,7 +1,9 @@
+import Groq from "groq-sdk";
 import { inngest } from "./client";
-import OpenAI from "openai";
+// import OpenAI from "openai";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+// const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Functions exported from this file are exposed to Inngest
 // See: @/app/api/inngest/route.ts
@@ -26,9 +28,27 @@ export const messageSent = inngest.createFunction(
     // All code is retried automatically on failure
     // Read more about Inngest steps: https://www.inngest.com/docs/learn/inngest-steps
     const reply = await step.run("create-reply", async () => {
-      if (OPENAI_API_KEY) {
-        const openai = new OpenAI();
-        const completion = await openai.chat.completions.create({
+      // if (OPENAI_API_KEY) {
+      //   const openai = new OpenAI();
+      //   const completion = await openai.chat.completions.create({
+      //     messages: [
+      //       {
+      //         role: "system",
+      //         content:
+      //           "You are a helpful assistant. Create a funny reply to my message:",
+      //       },
+      //       { role: "user", content: message?.text },
+      //     ],
+      //     model: "gpt-3.5-turbo",
+      //   });
+      //   return (
+      //     completion.choices[0]?.message.content ?? "Unexpected OpenAI response"
+      //   );
+      // } else {
+      //   return "Add OPENAI_API_KEY environment variable to get AI responses.";
+      // }
+      if (groq) {
+        const chatCompletion = await groq.chat.completions.create({
           messages: [
             {
               role: "system",
@@ -37,13 +57,16 @@ export const messageSent = inngest.createFunction(
             },
             { role: "user", content: message?.text },
           ],
-          model: "gpt-3.5-turbo",
+          model: "llama3-8b-8192",
         });
+
+        // Print the completion returned by the LLM.
         return (
-          completion.choices[0]?.message.content ?? "Unexpected OpenAI response"
+          chatCompletion.choices[0]?.message?.content ??
+          "Unexpected Groq response"
         );
       } else {
-        return "Add OPENAI_API_KEY environment variable to get AI responses.";
+        return "Groq is not available.";
       }
     });
 
