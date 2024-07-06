@@ -79,3 +79,12 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 //     return { event, body: `Here's your last message: ${newMessage?.text}!` };
 //   }
 // );
+
+export const testFunction = inngest.createFunction(
+  { id: "test-function" }, // Each function should have a unique ID
+  { event: "app/test.function" }, // When an event by this name received, this function will run
+
+  async ({ event, step, prisma }) => {
+    return { event, body: `This is a test message!` };
+  }
+);
