@@ -1,5 +1,5 @@
 {
-  "name": "next-pxci-starter",
+  "name": "aIQ",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,25 +12,35 @@
     "@clerk/nextjs": "^5.1.6",
     "@prisma/adapter-pg": "^5.16.1",
     "@prisma/client": "^5.16.1",
+    "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@tanstack/react-query": "^5.50.1",
     "@xata.io/cli": "^0.15.15",
     "@xata.io/client": "^0.29.5",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "groq-sdk": "^0.5.0",
     "inngest": "^3.19.18",
+    "lucide-react": "^0.400.0",
     "next": "14.2.4",
     "openai": "^4.52.2",
     "pg": "^8.12.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.19",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
-    "postcss": "^8",
+    "postcss": "^8.4.39",
     "prisma": "^5.16.1",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.4",
     "typescript": "^5"
   }
 }
