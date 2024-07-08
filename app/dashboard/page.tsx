@@ -4,20 +4,18 @@ import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
 // import { prisma } from "@/prisma/client";
 
-export async function inngestContentGenerationFunctionCaller(
-  searchQuery: string
-) {
-  "use server"
-  
-  await inngest.send({
-    name: "app/generate.content",
-    data: {
-      searchQuery: searchQuery,
-    },
-  });
-}
-
 const Dashboard = () => {
+  const inngestContentGenerationFunctionCaller = async (searchQuery: string) => {
+    "use server";
+  
+    await inngest.send({
+      name: "app/generate.content",
+      data: {
+        searchQuery: searchQuery,
+      },
+    });
+  };
+  
   // const message = await prisma.messages.findFirst({
   //   orderBy: { xata_createdat: "desc" },
   // });
