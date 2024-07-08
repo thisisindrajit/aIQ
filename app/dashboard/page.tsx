@@ -1,0 +1,37 @@
+import TopBar from "@/components/TopBar";
+import { Fragment } from "react";
+import { inngest } from "@/inngest";
+import CSearchBar from "@/components/CSearchBar";
+// import { prisma } from "@/prisma/client";
+
+export async function inngestContentGenerationFunctionCaller(
+  searchQuery: string
+) {
+  "use server"
+  
+  await inngest.send({
+    name: "app/generate.content",
+    data: {
+      searchQuery: searchQuery,
+    },
+  });
+}
+
+const Dashboard = () => {
+  // const message = await prisma.messages.findFirst({
+  //   orderBy: { xata_createdat: "desc" },
+  // });
+
+  return (
+    <Fragment>
+      <TopBar />
+      <CSearchBar
+        inngestContentGenerationFunctionCaller={
+          inngestContentGenerationFunctionCaller
+        }
+      />
+    </Fragment>
+  );
+};
+
+export default Dashboard;

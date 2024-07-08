@@ -2,3 +2,4 @@
 
 **References**
 - [Font - Satoshi](https://www.fontshare.com/fonts/satoshi)
+- [Favicon generator](https://favicon.io/favicon-converter/)
