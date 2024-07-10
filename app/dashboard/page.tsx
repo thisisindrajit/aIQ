@@ -9,13 +9,13 @@ const Dashboard = () => {
     "use server";
   
     await inngest.send({
-      name: "app/generate.content",
+      name: "app/generate.snippet",
       data: {
         searchQuery: searchQuery,
       },
     });
   };
-  
+
   // const message = await prisma.messages.findFirst({
   //   orderBy: { xata_createdat: "desc" },
   // });

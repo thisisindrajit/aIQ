@@ -7,12 +7,12 @@ import { inngest } from "./client";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Params: searchQuery (string)
-export const generateContent = inngest.createFunction(
-  { id: "generate-content" }, // Each function should have a unique ID
-  { event: "app/generate.content" }, // When an event by this name received, this function will run
+export const generateSnippet = inngest.createFunction(
+  { id: "generate-snippet" }, // Each function should have a unique ID
+  { event: "app/generate.snippet" }, // When an event by this name received, this function will run
 
   async ({ event, step, prisma }) => {
-    const reply = await step.run("generate-content", async () => {
+    const reply = await step.run("generate-snippet", async () => {
       // 1. Call the Groq API to generate the correct topic for the search query
       if (groq) {
         const chatCompletion = await groq.chat.completions.create({
