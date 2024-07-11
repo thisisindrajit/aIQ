@@ -1,13 +1,14 @@
 import TopBar from "@/components/TopBar";
-import { Fragment } from "react";
 import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
 // import { prisma } from "@/prisma/client";
 
 const Dashboard = () => {
-  const inngestContentGenerationFunctionCaller = async (searchQuery: string) => {
+  const inngestContentGenerationFunctionCaller = async (
+    searchQuery: string
+  ) => {
     "use server";
-  
+
     await inngest.send({
       name: "app/generate.snippet",
       data: {
@@ -21,14 +22,14 @@ const Dashboard = () => {
   // });
 
   return (
-    <Fragment>
+    <div className="flex flex-col gap-12">
       <TopBar />
       <CSearchBar
         inngestContentGenerationFunctionCaller={
           inngestContentGenerationFunctionCaller
         }
       />
-    </Fragment>
+    </div>
   );
 };
 
