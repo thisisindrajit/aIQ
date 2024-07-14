@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS "user_notifications" (
   "notification_receiver" text,
   "notification_type" text,
   "notification" text NOT NULL,
-  "is_read" boolean,
-  "is_cleared" boolean
+  "is_read" boolean DEFAULT false,
+  "is_cleared" boolean DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS "list_notification_types" (
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS "list_reward_reasons" (
 );
 
 CREATE TABLE IF NOT EXISTS "snippets" (
-  "generated_by_ai" boolean,
+  "generated_by_ai" boolean DEFAULT true,
   "likes_count" bigint NOT NULL DEFAULT 0,
   "requested_by" text
 );

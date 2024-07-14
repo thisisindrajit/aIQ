@@ -1,45 +1,145 @@
 import Groq from "groq-sdk";
 import { inngest } from "./client";
+import {
+  fetchHtmlContentAndVectorize,
+  normalizeChunks,
+  normalizeData,
+  searchForSources,
+} from "@/utilities/commonUtilities";
 
 // Functions exported from this file are exposed to Inngest
 // See: @/app/api/inngest/route.ts
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Params: searchQuery (string)
+// Params: searchQuery (string), userId (string)
 export const generateSnippet = inngest.createFunction(
   { id: "generate-snippet" }, // Each function should have a unique ID
   { event: "app/generate.snippet" }, // When an event by this name received, this function will run
-
   async ({ event, step, prisma }) => {
+    const { searchQuery, userId } = event.data;
+
+    if (!searchQuery || !userId) {
+      return { event, body: "Missing search query or user ID in parameters!" };
+    }
+
     // STEP 1: Get topic based on the search query
-    const topic = await step.run("get-topic", async () => {
+    const topic = await step.run("get-topic-using-llm", async () => {
       if (groq) {
         const chatCompletion = await groq.chat.completions.create({
           messages: [
             {
               role: "system",
-              content:
-                "You are a topic finder and based on the given input, you provide the search term for the input that will be used in a search engine API. In case the input itself can be a search term, ONLY RETURN THE INPUT. Else ONLY RETURN THE GENERATED SEARCH TERM. If the input is not understandable or there is no information regarding the input, ONLY RETURN NO INFORMATION.",
+              content: process.env.TOPIC_GENERATION_PROMPT!,
             },
-            { role: "user", content: event.data.searchQuery },
+            { role: "user", content: searchQuery },
           ],
           model: "llama3-70b-8192",
         });
 
-        // Print the completion returned by the LLM. In case of an error, return the search query itself
-        return (
-          chatCompletion.choices[0]?.message?.content ?? event.data.searchQuery
-        );
+        if (chatCompletion.choices[0]?.message?.content) {
+          return {
+            generatedByLlm: true,
+            data: chatCompletion.choices[0]?.message?.content,
+          };
+        }
       }
 
-      return event.data.searchQuery;
+      return { generatedByLlm: false, data: searchQuery };
     });
 
-    // STEP 2: Use brave search API to get the search results and store them in memory vector database
+    if (
+      topic.data.generatedByLlm &&
+      topic.data.toLowerCase() === "no information"
+    ) {
+      // TODO: Create an entry in the notification table for the user
+      return { event, body: "No information found for the search query" };
+    }
 
-    // STEP 3: Use the search results to generate a snippet
+    // STEP 2: Use search API to get search results and retrieve similar chunks of text by vectorizing the normalized results
+    const similarTextChunks = await step.run(
+      "search-and-retrieve-similar-snippets-by-vectorization",
+      async () => {
+        try {
+          const formattedTopic = "Give me basic information about " + topic.data; // This is done to get more relevant search results
 
-    return { event, body: topic };
+          // Get search results
+          const searchResults = await searchForSources(formattedTopic);
+
+          // Normalize search results
+          const normalizedData = await normalizeData(searchResults);
+
+          // Process and vectorize the content
+          return {
+            success: true,
+            message:
+              "Successfully retrieved similar chunks of text using vectorization",
+            data: await Promise.all(
+              normalizedData.map((item: { title: string; link: string }) =>
+                fetchHtmlContentAndVectorize(searchQuery, item)
+              )
+            ),
+          };
+        } catch (error) {
+          return {
+            success: false,
+            message:
+              "Error retrieving similar chunks of text using vectorization",
+            data: null,
+          };
+        }
+      }
+    );
+
+    if (similarTextChunks.success === false || !similarTextChunks.data) {
+      // TODO: Create an entry in the notification table for the user
+      return {
+        event,
+        body:
+          similarTextChunks.message ??
+          "Error retrieving similar chunks of text using vectorization",
+      };
+    }
+
+    // STEP 3: Use topic and similar chunks to generate a snippet
+    const snippet = await step.run("generate-snippet-using-rag", async () => {
+      if (groq) {
+        const normalizedChunks = normalizeChunks(similarTextChunks);
+
+        const chatCompletion = await groq.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: `Here is my topic - ${topic.data}. ${process.env
+                .SNIPPET_GENERATION_PROMPT!}`,
+            },
+            {
+              role: "user",
+              content:
+                normalizedChunks.length > 0
+                  ? `Here are the top results from a similarity search - ${normalizedChunks}`
+                  : "",
+            },
+          ],
+          model: "llama3-70b-8192", // "mixtral-8x7b-32768"
+          response_format: { type: "json_object" },
+        });
+
+        if (chatCompletion.choices[0]?.message?.content) {
+          return {
+            success: true,
+            data: JSON.parse(chatCompletion.choices[0]?.message?.content),
+          };
+        }
+      }
+
+      return {
+        success: false,
+        data: null,
+        message: "Error while generating snippet",
+      };
+    });
+
+    return { event, body: snippet };
   }
 );

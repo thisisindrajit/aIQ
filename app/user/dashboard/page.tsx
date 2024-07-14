@@ -5,7 +5,8 @@ import CSearchBar from "@/components/CSearchBar";
 
 const Dashboard = () => {
   const inngestContentGenerationFunctionCaller = async (
-    searchQuery: string
+    searchQuery: string,
+    userId?: string | null
   ) => {
     "use server";
 
@@ -13,6 +14,7 @@ const Dashboard = () => {
       name: "app/generate.snippet",
       data: {
         searchQuery: searchQuery,
+        userId: userId,
       },
     });
   };
@@ -22,7 +24,7 @@ const Dashboard = () => {
   // });
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-16 min-h-screen p-4 lg:p-6">
       <TopBar />
       <CSearchBar
         inngestContentGenerationFunctionCaller={

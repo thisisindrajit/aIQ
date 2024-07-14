@@ -47,7 +47,7 @@ export default function RootLayout({
             content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"
           />
         </head>
-        <body className="p-4 lg:p-6 m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
+        <body className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
           {children}
         </body>
       </html>
