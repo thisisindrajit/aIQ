@@ -1,4 +1,4 @@
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,21 @@ const TopBar: FC = () => {
           </span>
         </div>
       </div>
-      {/* Profile picture */}
+      {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
-        <UserButton />
+        <UserButton
+          appearance={{
+            elements: {
+              userButtonAvatarBox: "size-7",
+            },
+          }}
+        />
       </SignedIn>
       <SignedOut>
-        <SignInButton>
+        <SignInButton
+          forceRedirectUrl="/user/dashboard"
+          signUpForceRedirectUrl="/user/dashboard"
+        >
           <Button size="sm" className="bg-primary rounded-xl text-sm">
             Login
           </Button>

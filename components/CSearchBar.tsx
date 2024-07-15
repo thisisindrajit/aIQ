@@ -2,16 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import { FC, ChangeEvent, FormEvent, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 const CSearchBar: FC<{
   inngestContentGenerationFunctionCaller: (
-    searchQuery: string
+    searchQuery: string,
+    userId?: string | null
   ) => Promise<void>;
 }> = ({ inngestContentGenerationFunctionCaller }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [width, setWidth] = useState(18);
+  const { userId } = useAuth();
 
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -20,15 +23,19 @@ const CSearchBar: FC<{
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     const formattedSearchQuery = searchQuery.trim();
 
     if (formattedSearchQuery === "")
       return alert("Please enter a search query!");
 
-    console.log("Formatted search query - ", formattedSearchQuery);
+    console.log(
+      "Formatted search query and user id- ",
+      formattedSearchQuery,
+      userId
+    );
     setSearchQuery("");
-    await inngestContentGenerationFunctionCaller(formattedSearchQuery);
+    await inngestContentGenerationFunctionCaller(formattedSearchQuery, userId);
   };
 
   return (
@@ -45,7 +52,7 @@ const CSearchBar: FC<{
           onChange={(e) => changeHandler(e)}
         />
         <Button size="icon" type="submit" className="rounded-full">
-          <Search className="h-4 w-4" />
+          <ArrowRight className="h-5 w-5" />
         </Button>
       </form>
     </div>

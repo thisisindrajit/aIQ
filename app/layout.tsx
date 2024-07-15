@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ReactNode } from "react";
 
 import "./globals.css";
 
@@ -12,10 +13,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl="/">
       <html lang="en">
         <head>
           <link
@@ -46,7 +47,7 @@ export default function RootLayout({
             content="height=device-height, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"
           />
         </head>
-        <body className="flex flex-col gap-8 p-4 lg:p-6 m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
+        <body className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
           {children}
         </body>
       </html>
