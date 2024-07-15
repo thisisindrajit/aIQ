@@ -17,7 +17,8 @@ export const generateSnippet = inngest.createFunction(
   { id: "generate-snippet" }, // Each function should have a unique ID
   { event: "app/generate.snippet" }, // When an event by this name received, this function will run
   async ({ event, step, prisma }) => {
-    const { searchQuery, userId } = event.data;
+    const { searchQuery, userId }: { searchQuery: string; userId: string } =
+      event.data;
 
     if (!searchQuery || !userId) {
       return { event, body: "Missing search query or user ID in parameters!" };
@@ -37,23 +38,36 @@ export const generateSnippet = inngest.createFunction(
           model: "llama3-70b-8192",
         });
 
-        if (chatCompletion.choices[0]?.message?.content) {
+        const generatedTopic = chatCompletion.choices[0]?.message?.content;
+
+        if (generatedTopic) {
           return {
             generatedByLlm: true,
-            data: chatCompletion.choices[0]?.message?.content,
+            data: generatedTopic,
           };
         }
+      } else {
+        console.error("Groq API key is missing");
       }
 
       return { generatedByLlm: false, data: searchQuery };
     });
 
-    if (
-      topic.data.generatedByLlm &&
-      topic.data.toLowerCase() === "no information"
-    ) {
-      // TODO: Create an entry in the notification table for the user
-      return { event, body: "No information found for the search query" };
+    // If no information is found by topic generator, then create an entry in the notification table and exit
+    if (topic.generatedByLlm && topic.data.toLowerCase() === "no information") {
+      await prisma.user_notifications.create({
+        data: {
+          notification: `No information found for the search query - ${searchQuery}. Please try again with a different search query.`,
+          notification_creator: process.env.AIQ_AI_USER_ID!,
+          notification_receiver: userId,
+          notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
+        },
+      });
+
+      return {
+        event,
+        body: `No information found by topic generator for the search query - ${searchQuery}`,
+      };
     }
 
     // STEP 2: Use search API to get search results and retrieve similar chunks of text by vectorizing the normalized results
@@ -61,7 +75,8 @@ export const generateSnippet = inngest.createFunction(
       "search-and-retrieve-similar-snippets-by-vectorization",
       async () => {
         try {
-          const formattedTopic = "Give me basic information about " + topic.data; // This is done to get more relevant search results
+          const formattedTopic =
+            "Give me basic information about " + topic.data; // This is done to get more relevant search results
 
           // Get search results
           const searchResults = await searchForSources(formattedTopic);
@@ -69,35 +84,48 @@ export const generateSnippet = inngest.createFunction(
           // Normalize search results
           const normalizedData = await normalizeData(searchResults);
 
-          // Process and vectorize the content
+          // Vectorize the content and return similar chunks
+          const similarTextChunks = await Promise.all(
+            normalizedData.map((item: { title: string; link: string }) =>
+              fetchHtmlContentAndVectorize(searchQuery, item)
+            )
+          );
+
+          if(!similarTextChunks || similarTextChunks.length === 0) {
+            throw new Error();
+          }
+
           return {
             success: true,
-            message:
-              "Successfully retrieved similar chunks of text using vectorization",
-            data: await Promise.all(
-              normalizedData.map((item: { title: string; link: string }) =>
-                fetchHtmlContentAndVectorize(searchQuery, item)
-              )
-            ),
+            message: `Successfully retrieved similar chunks of text using vectorization for the search query - ${searchQuery}`,
+            data: similarTextChunks,
           };
         } catch (error) {
           return {
             success: false,
-            message:
-              "Error retrieving similar chunks of text using vectorization",
+            message: `Error retrieving similar chunks of text using vectorization for the search query - ${searchQuery}`,
             data: null,
           };
         }
       }
     );
 
+    // If some error occurred while generating similar text chunks, then create an entry in the notification table and exit
     if (similarTextChunks.success === false || !similarTextChunks.data) {
-      // TODO: Create an entry in the notification table for the user
+      await prisma.user_notifications.create({
+        data: {
+          notification: `Some error occurred while generating snippet for the search query - ${searchQuery}. Please try again.`,
+          notification_creator: process.env.AIQ_AI_USER_ID!,
+          notification_receiver: userId,
+          notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
+        },
+      });
+
       return {
         event,
         body:
           similarTextChunks.message ??
-          "Error retrieving similar chunks of text using vectorization",
+          `Error retrieving similar chunks of text using vectorization for the search query - ${searchQuery}`,
       };
     }
 
@@ -121,24 +149,73 @@ export const generateSnippet = inngest.createFunction(
                   : "",
             },
           ],
-          model: "llama3-70b-8192", // "mixtral-8x7b-32768"
+          model: "llama3-70b-8192", // Other models - "mixtral-8x7b-32768"
           response_format: { type: "json_object" },
         });
 
-        if (chatCompletion.choices[0]?.message?.content) {
+        const generatedSnippet = chatCompletion.choices[0]?.message?.content;
+
+        if (generatedSnippet && generatedSnippet !== "{}") {
+          const createdSnippet = await prisma.snippets.create({
+            data: {
+              generated_by_ai: true,
+              requested_by: userId,
+              snippet_title: searchQuery,
+            },
+          });
+
+          await prisma.snippet_type_and_data_mapping.create({
+            data: {
+              snippet_id: createdSnippet.xata_id,
+              type: "rec_cqafk3325jvdoj83gfcg", // For now, only generating 5W1H type snippets
+              data: JSON.parse(generatedSnippet),
+            },
+          });
+
+          await prisma.user_notifications.create({
+            data: {
+              notification: `Generated snippet for the search query - ${searchQuery}. The snippet id is ${createdSnippet.xata_id}.`,
+              notification_creator: process.env.AIQ_AI_USER_ID!,
+              notification_receiver: userId,
+              notification_type: "rec_cqabeqdt6qchmfcgs03g", // notification type for generated snippet
+            },
+          });
+
           return {
             success: true,
-            data: JSON.parse(chatCompletion.choices[0]?.message?.content),
+            message: `Snippet generated successfully for the search query - ${searchQuery}`,
+            data: JSON.parse(generatedSnippet),
           };
         }
+      } else {
+        console.error("Groq API key is missing");
       }
 
       return {
         success: false,
+        message: `Error while generating snippet for the search query - ${searchQuery}`,
         data: null,
-        message: "Error while generating snippet",
       };
     });
+
+    // If snippet is not generated successfully, then create an entry in the notification table and exit.
+    if (snippet.success === false) {
+      await prisma.user_notifications.create({
+        data: {
+          notification: `Some error occurred while generating snippet for the search query - ${searchQuery}. Please try again.`,
+          notification_creator: process.env.AIQ_AI_USER_ID!,
+          notification_receiver: userId,
+          notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
+        },
+      });
+
+      return {
+        event,
+        body:
+          snippet.message ??
+          `Error while generating snippet for the search query - ${searchQuery}`,
+      };
+    }
 
     return { event, body: snippet };
   }

@@ -24,7 +24,7 @@ const Dashboard = () => {
   // });
 
   return (
-    <div className="flex flex-col gap-16 min-h-screen p-4 lg:p-6">
+    <div className="flex flex-col gap-12 min-h-screen p-4 lg:p-6">
       <TopBar />
       <CSearchBar
         inngestContentGenerationFunctionCaller={
