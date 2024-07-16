@@ -29,11 +29,6 @@ const CSearchBar: FC<{
     if (formattedSearchQuery === "")
       return alert("Please enter a search query!");
 
-    console.log(
-      "Formatted search query and user id- ",
-      formattedSearchQuery,
-      userId
-    );
     setSearchQuery("");
     await inngestContentGenerationFunctionCaller(formattedSearchQuery, userId);
   };

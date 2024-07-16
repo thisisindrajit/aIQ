@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ReactNode } from "react";
 
 import "./globals.css";
+import CReactQueryProvider from "@/providers/CReactQueryProvider";
 
 export const metadata: Metadata = {
   title: "aIQ",
@@ -48,7 +49,7 @@ export default function RootLayout({
           />
         </head>
         <body className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
-          {children}
+          <CReactQueryProvider>{children}</CReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

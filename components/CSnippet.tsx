@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "./ui/carousel";
 import { Card, CardContent } from "./ui/card";
+import { separateSentences } from "@/utilities/commonUtilities";
 
 interface ICSnippetProps {
   title: string;
@@ -68,9 +69,9 @@ const CSnippet: FC<ICSnippetProps> = ({
   }, [api]);
 
   return (
-    <div className="bg-accent/10 border border-accent text-accent-foreground min-h-[24rem] h-fit rounded-lg flex flex-col p-3 sm:p-4 gap-6">
+    <div className="bg-accent/10 border border-accent text-accent-foreground min-h-[24rem] h-fit rounded-lg flex flex-col p-3 sm:p-4 gap-4 lg:gap-6">
       {/* Title */}
-      <div className="text-lg/relaxed sm:text-xl/relaxed font-medium">
+      <div className="text-lg/relaxed sm:text-xl/relaxed font-medium mb-4 underline decoration-dotted underline-offset-8">
         {title}
       </div>
       {/* 5W1H carousel */}
@@ -78,14 +79,32 @@ const CSnippet: FC<ICSnippetProps> = ({
         <div className="bg-background text-foreground border border-foreground p-2 rounded-md w-fit text-sm sm:text-base">
           {getCurrentSlideText(current)}
         </div>
-        <Carousel setApi={setApi}>
+        <Carousel setApi={setApi} opts={{ loop: true }}>
           <CarouselContent>
             {categoryArray.map((content, index) => (
               <CarouselItem key={index}>
-                <Card>
-                  <CardContent className="flex w-full h-[24rem] p-6">
-                    <span>{content}</span>
+                <Card className="flex flex-col w-full p-3 select-none">
+                  <CardContent className="px-4">
+                    {!content.includes("No data") ? (
+                      <ul className="flex flex-col gap-4 list-disc list-outside">
+                        {separateSentences(content).map((sentence, index) => {
+                          return (
+                            <li
+                              key={index}
+                              className="leading-loose text-justify"
+                            >
+                              {sentence}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      content
+                    )}
                   </CardContent>
+                  <span className="text-sm px-2 py-1 bg-neutral-50 border border-neutral-300 rounded-lg w-fit self-end">
+                    👆🏻 Swipe left or right to view more
+                  </span>
                 </Card>
               </CarouselItem>
             ))}
@@ -96,13 +115,15 @@ const CSnippet: FC<ICSnippetProps> = ({
       </div>
       {/* Amazing facts */}
       {hasAmazingFacts && amazingFacts && amazingFacts.length > 0 && (
-        <div className="bg-accent/35 p-4 rounded-md flex flex-col gap-4">
+        <div className="bg-accent/35 p-3 rounded-lg flex flex-col gap-4">
           <span className="bg-background text-foreground border border-foreground p-2 rounded-md w-fit">
             {`🤯 Amazing facts`}
           </span>
-          <ul className="flex flex-col gap-3 list-disc list-inside leading-relaxed">
+          <ul className="flex flex-col gap-4 px-4 list-disc list-outside">
             {amazingFacts.map((fact, index) => (
-              <li key={index}>{fact}</li>
+              <li key={index} className="leading-loose text-justify">
+                {fact}
+              </li>
             ))}
           </ul>
         </div>

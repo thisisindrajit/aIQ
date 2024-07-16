@@ -30,11 +30,12 @@ model list_reward_reasons {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model list_snippet_types {
-  snippet_type   String   @db.VarChar
-  xata_id        String   @unique(map: "list_snippet_types__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int      @default(0)
-  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
-  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
+  snippet_type                  String                          @db.VarChar
+  xata_id                       String                          @unique(map: "list_snippet_types__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version                  Int                             @default(0)
+  xata_createdat                DateTime                        @default(now()) @db.Timestamptz(6)
+  xata_updatedat                DateTime                        @default(now()) @db.Timestamptz(6)
+  snippet_type_and_data_mapping snippet_type_and_data_mapping[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -85,28 +86,31 @@ model snippet_saves {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model snippet_type_and_data_mapping {
-  snippet_id     String?
-  type           String?
-  data           Json
-  xata_updatedat DateTime @default(now()) @db.Timestamptz(6)
-  xata_id        String   @unique(map: "snippet_type_and_data_mapping__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  xata_version   Int      @default(0)
-  xata_createdat DateTime @default(now()) @db.Timestamptz(6)
+  snippet_id         String?
+  type               String?
+  data               Json
+  xata_updatedat     DateTime            @default(now()) @db.Timestamptz(6)
+  xata_id            String              @unique(map: "snippet_type_and_data_mapping__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  xata_version       Int                 @default(0)
+  xata_createdat     DateTime            @default(now()) @db.Timestamptz(6)
+  snippets           snippets?           @relation(fields: [snippet_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
+  list_snippet_types list_snippet_types? @relation(fields: [type], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model snippets {
-  generated_by_ai Boolean?        @default(true)
-  likes_count     BigInt          @default(0)
-  requested_by    String?
-  xata_version    Int             @default(0)
-  xata_createdat  DateTime        @default(now()) @db.Timestamptz(6)
-  xata_updatedat  DateTime        @default(now()) @db.Timestamptz(6)
-  xata_id         String          @unique(map: "snippets__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
-  snippet_title   String          @db.VarChar(255)
-  snippet_likes   snippet_likes[]
-  snippet_notes   snippet_notes[]
-  snippet_saves   snippet_saves[]
+  generated_by_ai               Boolean?                        @default(true)
+  likes_count                   BigInt                          @default(0)
+  requested_by                  String?
+  xata_version                  Int                             @default(0)
+  xata_createdat                DateTime                        @default(now()) @db.Timestamptz(6)
+  xata_updatedat                DateTime                        @default(now()) @db.Timestamptz(6)
+  xata_id                       String                          @unique(map: "snippets__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  snippet_title                 String                          @db.VarChar(255)
+  snippet_likes                 snippet_likes[]
+  snippet_notes                 snippet_notes[]
+  snippet_saves                 snippet_saves[]
+  snippet_type_and_data_mapping snippet_type_and_data_mapping[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.

@@ -192,3 +192,18 @@ export function normalizeChunks(obj: { [x: string]: any }) {
     )
     .join(" | ");
 }
+
+export function separateSentences(paragraph: string): string[] {
+  // Regular expression to match sentence endings
+  const sentenceRegex = /[.!?]+(?=\s+|$)/g;
+  
+  // Split the paragraph into sentences
+  const sentences = paragraph.split(sentenceRegex);
+  
+  // Trim whitespace and filter out empty sentences
+  return sentences
+    .map(sentence => sentence.trim())
+    .filter(sentence => sentence.length > 0)
+    .map(sentence => sentence + ".");
+}
+
