@@ -193,6 +193,7 @@ export function normalizeChunks(obj: { [x: string]: any }) {
     .join(" | ");
 }
 
+// Utility function to separate sentences from a paragraph
 export function separateSentences(paragraph: string): string[] {
   // Regular expression to match sentence endings
   const sentenceRegex = /[.!?]+(?=\s+|$)/g;
@@ -205,5 +206,13 @@ export function separateSentences(paragraph: string): string[] {
     .map(sentence => sentence.trim())
     .filter(sentence => sentence.length > 0)
     .map(sentence => sentence + ".");
+}
+
+// Utility function to convert all keys of an object to lowercase
+export function lowercaseKeys<T extends Record<string, any>>(obj: T): { [K in Lowercase<string & keyof T>]: T[keyof T] } {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+      (acc as any)[key.toLowerCase()] = value;
+      return acc;
+  }, {} as { [K in Lowercase<string & keyof T>]: T[keyof T] });
 }
 
