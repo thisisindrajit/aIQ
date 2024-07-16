@@ -29,11 +29,6 @@ const CSearchBar: FC<{
     if (formattedSearchQuery === "")
       return alert("Please enter a search query!");
 
-    console.log(
-      "Formatted search query and user id- ",
-      formattedSearchQuery,
-      userId
-    );
     setSearchQuery("");
     await inngestContentGenerationFunctionCaller(formattedSearchQuery, userId);
   };
@@ -46,12 +41,13 @@ const CSearchBar: FC<{
       <form onSubmit={submitHandler} className="flex gap-2">
         <Input
           placeholder="type in any topic..."
-          className="text-xl md:text-2xl text-center sm:text-left px-0 pb-2 md:pb-4 rounded-none outline-none border-x-0 border-t-0 border-b-2 border-gray-300 text-primary placeholder:italic focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:border-primary focus-visible:placeholder:opacity-0 sm:focus-visible:placeholder:opacity-100 duration-200 ease-in-out max-w-[72vw] sm:max-w-[42vw] md:max-w-[48vw]"
+          className="text-xl md:text-2xl text-center sm:text-left px-0 pb-2 md:pb-4 rounded-none outline-none border-x-0 border-t-0 border-b-2 border-gray-300 text-tertiary placeholder:italic focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-transparent focus-visible:border-tertiary focus-visible:placeholder:opacity-0 sm:focus-visible:placeholder:opacity-100 duration-200 ease-in-out max-w-[72vw] sm:max-w-[42vw] md:max-w-[48vw]"
           style={{ width: width + "ch" }}
+          maxLength={255}
           value={searchQuery}
           onChange={(e) => changeHandler(e)}
         />
-        <Button size="icon" type="submit" className="rounded-full">
+        <Button size="icon" type="submit" className="rounded-full bg-tertiary text-tertiary-foreground hover:bg-tertiary/90">
           <ArrowRight className="h-5 w-5" />
         </Button>
       </form>

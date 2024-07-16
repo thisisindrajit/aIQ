@@ -5,9 +5,19 @@ import TopBar from "@/components/TopBar";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import CSnippet from "@/components/CSnippet";
 
 const Home = async () => {
   const { userId }: { userId: string | null } = auth();
+  const aIQDetails = {
+    title: "aIQ",
+    whatOrWho: "AI + IQ",
+    when: "2021",
+    where: "India",
+    why: "To enhance your knowledge",
+    how: "One snippet at a time",
+    hasAmazingFacts: false,
+  };
 
   if (userId) {
     redirect("/user/dashboard");
@@ -17,13 +27,13 @@ const Home = async () => {
     <div className="flex flex-col items-center justify-between gap-12 min-h-screen p-4 lg:p-6">
       <TopBar />
       {/* Landing page grid */}
-      <div className="grid lg:grid-cols-2 gap-2 lg:gap-4">
+      <div className="flex flex-col lg:flex-row w-full gap-2 lg:gap-4">
         {/* First grid */}
         <div className="flex flex-col gap-2 lg:gap-4">
           {/* aIQ motto */}
           <div className="bg-primary/25 text-2xl/relaxed sm:text-3xl/relaxed xl:text-4xl/relaxed text-center p-6 sm:p-12 rounded-lg">
             Where{" "}
-            <span className="bg-primary/50 text-white font-medium">
+            <span className="bg-primary/50 text-primary-foreground font-medium">
               artificial intelligence
             </span>{" "}
             meets{" "}
@@ -32,7 +42,7 @@ const Home = async () => {
             </span>
           </div>
           {/* aIQ definition */}
-          <div className="flex flex-col gap-4 bg-secondary/25 p-6 sm:p-12 rounded-lg">
+          <div className="flex flex-col gap-4 bg-secondary/25 p-6 sm:p-12 rounded-lg h-full justify-center">
             <span className="text-secondary text-2xl sm:text-3xl">aIQ</span>
             <span className="text-sm sm:text-base">AI + IQ</span>
             <Separator className="bg-secondary" />
@@ -49,11 +59,16 @@ const Home = async () => {
             </div>
           </div>
         </div>
-        {/* Second grid */}
-        <div>
-          {/* Snippet box */}
-          <div className="bg-gray-100 h-[32rem] lg:h-full rounded-lg flex items-center justify-center">This is the snippet box for aIQ</div>
-        </div>
+        {/* Second grid (only snippet) */}
+        <CSnippet
+          title={aIQDetails.title}
+          whatOrWho={aIQDetails.whatOrWho}
+          why={aIQDetails.why}
+          when={aIQDetails.when}
+          where={aIQDetails.where}
+          how={aIQDetails.how}
+          hasAmazingFacts={aIQDetails.hasAmazingFacts}
+        />
       </div>
       {/* Footer */}
       <div>
