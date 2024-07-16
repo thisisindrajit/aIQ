@@ -48,7 +48,7 @@ const CSnippetsHolder: FC<{
           Loading trending snippets ✨
         </div>
       ) : status === "error" ? (
-        <div className="w-full text-danger text-center my-2">
+        <div className="w-full text-destructive text-center my-2">
           Some error occurred while fetching trending snippets!
         </div>
       ) : (
@@ -57,13 +57,13 @@ const CSnippetsHolder: FC<{
             <Fragment key={index}>
               {page.map((snippet) => (
                 <CSnippet
-                  key={index}
+                  key={snippet.xata_id}
                   title={snippet.snippet_title}
                   whatOrWho={
                     JSON.parse(
                       JSON.stringify(
                         snippet.snippet_type_and_data_mapping.filter(
-                          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg"
+                          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
                         )[0].data
                       )
                     )["what/who"] ?? "No data 😭"

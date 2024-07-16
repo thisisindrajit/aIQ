@@ -3,9 +3,30 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
-import { Bell } from "lucide-react";
+import CNotificationBar from "./CNotificationBar";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/prisma/client";
 
 const TopBar: FC = () => {
+  const { userId } = auth();
+
+  const getNotificationsForUser = async () => {
+    "use server"
+
+    return await prisma.user_notifications.findMany({
+      take: 15,
+      include: {
+        list_notification_types: true,
+      },
+      where: {
+        notification_receiver: userId,
+      },
+      orderBy: {
+        xata_createdat: "desc",
+      },
+    });
+  }
+
   return (
     <div className="w-full flex items-center justify-between">
       {/* Logo */}
@@ -22,7 +43,7 @@ const TopBar: FC = () => {
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
         <div className="flex items-center justify-center gap-4">
-          <Bell className="h-7 w-7 cursor-pointer rounded-lg bg-secondary/10 p-1.5 text-secondary border border-secondary" />
+          <CNotificationBar getNotificationsForUser={getNotificationsForUser} />
           <UserButton
             appearance={{
               elements: {

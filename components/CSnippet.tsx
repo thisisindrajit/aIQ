@@ -70,9 +70,14 @@ const CSnippet: FC<ICSnippetProps> = ({
 
   return (
     <div className="bg-accent/10 border border-accent text-accent-foreground min-h-[24rem] h-fit rounded-lg flex flex-col p-3 sm:p-4 gap-4 lg:gap-6">
-      {/* Title */}
-      <div className="text-lg/relaxed sm:text-xl/relaxed font-medium mb-4 underline decoration-dotted underline-offset-8">
-        {title}
+      {/* Title and type */}
+      <div>
+        <div className="text-lg/relaxed sm:text-xl/relaxed font-medium mb-4 underline decoration-dotted underline-offset-8">
+          {title}
+        </div>
+        <div className="text-xs font-medium bg-accent text-accent-foreground py-1 px-2 w-fit rounded-lg">
+          5W1H
+        </div>
       </div>
       {/* 5W1H carousel */}
       <div className="w-full md:w-4/5 m-auto flex flex-col gap-3">
