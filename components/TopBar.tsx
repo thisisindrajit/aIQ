@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
+import { Bell } from "lucide-react";
 
 const TopBar: FC = () => {
   return (
@@ -20,13 +21,16 @@ const TopBar: FC = () => {
       </div>
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
-        <UserButton
-          appearance={{
-            elements: {
-              userButtonAvatarBox: "size-7",
-            },
-          }}
-        />
+        <div className="flex items-center justify-center gap-4">
+          <Bell className="h-7 w-7 cursor-pointer rounded-lg bg-secondary/10 p-1.5 text-secondary border border-secondary" />
+          <UserButton
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "size-7",
+              },
+            }}
+          />
+        </div>
       </SignedIn>
       <SignedOut>
         <SignInButton

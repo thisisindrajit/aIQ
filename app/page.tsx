@@ -23,7 +23,7 @@ const Home = async () => {
           {/* aIQ motto */}
           <div className="bg-primary/25 text-2xl/relaxed sm:text-3xl/relaxed xl:text-4xl/relaxed text-center p-6 sm:p-12 rounded-lg">
             Where{" "}
-            <span className="bg-primary/50 text-white font-medium">
+            <span className="bg-primary/50 text-primary-foreground font-medium">
               artificial intelligence
             </span>{" "}
             meets{" "}
