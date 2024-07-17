@@ -59,7 +59,7 @@ const Home = async () => {
           </div>
         </div>
         {/* Second grid (only snippet) */}
-        <div className="w-full lg:w-[50%] xl:w-full">
+        <div className="w-full lg:w-[50%] 2xl:w-full">
           <CSnippet
             title={aIQDetails.title}
             whatOrWho={aIQDetails.whatOrWho}
