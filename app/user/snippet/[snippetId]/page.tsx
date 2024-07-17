@@ -28,7 +28,7 @@ const Snippet: FC<{
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
-  const snippet = lowercaseKeys(
+  const snippet5w1hData = lowercaseKeys(
     JSON.parse(
       JSON.stringify(
         snippetData.snippet_type_and_data_mapping.filter(
@@ -43,21 +43,25 @@ const Snippet: FC<{
       <TopBar />
       <div className="flex flex-col gap-4 w-full 2xl:w-[90%] mx-auto">
         <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`}>
-          <Button variant="outline" className="flex gap-2 items-center justify-center">
+          <Button
+            variant="outline"
+            className="flex gap-2 items-center justify-center"
+          >
             <ArrowLeft className="h-4 w-4" />
             Go to trending snippets
           </Button>
         </Link>
         <CSnippet
+          generatedByAi={snippetData.generated_by_ai || false}
           key={snippetData.xata_id}
           title={snippetData.snippet_title}
-          whatOrWho={snippet["what/who"] ?? "No data 😭"}
-          why={snippet["why"] ?? "No data 😭"}
-          when={snippet["when"] ?? "No data 😭"}
-          where={snippet["where"] ?? "No data 😭"}
-          how={snippet["how"] ?? "No data 😭"}
-          hasAmazingFacts={snippet["amazing facts"]?.length > 0}
-          amazingFacts={snippet["amazing facts"] ?? []}
+          whatOrWho={snippet5w1hData["what/who"] ?? "No data 😭"}
+          why={snippet5w1hData["why"] ?? "No data 😭"}
+          when={snippet5w1hData["when"] ?? "No data 😭"}
+          where={snippet5w1hData["where"] ?? "No data 😭"}
+          how={snippet5w1hData["how"] ?? "No data 😭"}
+          hasAmazingFacts={snippet5w1hData["amazing facts"]?.length > 0}
+          amazingFacts={snippet5w1hData["amazing facts"] ?? []}
         />
       </div>
     </div>

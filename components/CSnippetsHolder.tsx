@@ -34,6 +34,7 @@ const CSnippetsHolder: FC<{
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
         lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
+      refetchInterval: 30000,
     });
 
   useEffect(() => {
