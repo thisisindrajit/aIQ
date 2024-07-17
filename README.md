@@ -2,6 +2,8 @@
 
 Here is the [link to aIQ](https://aiq.fyi), if you want to directly explore it 🥳
 
+![image](https://github.com/user-attachments/assets/a7484a14-c480-431d-9178-ef381397287b)
+
 ### About aIQ
 
 aIQ is an innovative ed-tech social media platform that combines artificial intelligence with a social media-inspired interface to deliver bite-sized, comprehensive learning experiences. The goal is to make learning engaging, accessible, and enjoyable.
