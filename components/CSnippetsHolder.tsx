@@ -70,6 +70,7 @@ const CSnippetsHolder: FC<{
                 return (
                   <CSnippet
                     key={snippet.xata_id}
+                    generatedByAi={snippet.generated_by_ai || false}
                     title={snippet.snippet_title}
                     whatOrWho={snippetData["what/who"] ?? "No data 😭"}
                     why={snippetData["why"] ?? "No data 😭"}

@@ -118,7 +118,7 @@ async function fetchPageContent(link: string) {
     for (let i = 0; i < userAgents.length; i++) {
       const responseText = await fetchDataFromUrl(link, userAgents[i]);
 
-      if(responseText.length > 0){
+      if (responseText.length > 0) {
         return extractMainContent(responseText);
       }
     }
@@ -197,22 +197,60 @@ export function normalizeChunks(obj: { [x: string]: any }) {
 export function separateSentences(paragraph: string): string[] {
   // Regular expression to match sentence endings
   const sentenceRegex = /[.!?]+(?=\s+|$)/g;
-  
+
   // Split the paragraph into sentences
   const sentences = paragraph.split(sentenceRegex);
-  
+
   // Trim whitespace and filter out empty sentences
   return sentences
-    .map(sentence => sentence.trim())
-    .filter(sentence => sentence.length > 0)
-    .map(sentence => sentence + ".");
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length > 0)
+    .map((sentence) => sentence + ".");
 }
 
 // Utility function to convert all keys of an object to lowercase
-export function lowercaseKeys<T extends Record<string, any>>(obj: T): { [K in Lowercase<string & keyof T>]: T[keyof T] } {
+export function lowercaseKeys<T extends Record<string, any>>(
+  obj: T
+): { [K in Lowercase<string & keyof T>]: T[keyof T] } {
   return Object.entries(obj).reduce((acc, [key, value]) => {
-      (acc as any)[key.toLowerCase()] = value;
-      return acc;
+    (acc as any)[key.toLowerCase()] = value;
+    return acc;
   }, {} as { [K in Lowercase<string & keyof T>]: T[keyof T] });
 }
 
+// Utility function to convert date to a pretty format in local timezone
+export const convertToPrettyDateFormatInLocalTimezone = (inputDate: Date) => {
+  const date = inputDate.getDate();
+  const month = inputDate.getMonth() + 1;
+  const year = inputDate.getFullYear();
+
+  const hours =
+    inputDate.getHours() > 12
+      ? inputDate.getHours() - 12
+      : inputDate.getHours() === 0
+      ? 12
+      : inputDate.getHours();
+
+  const minutes =
+    inputDate.getMinutes() < 10
+      ? "0" + inputDate.getMinutes()
+      : inputDate.getMinutes();
+  const amOrPm = inputDate.getHours() >= 12 ? "PM" : "AM";
+
+  let fullDate = `${date}/${month}/${year}`;
+
+  let today = new Date();
+
+  if (
+    inputDate.toLocaleDateString() ===
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    ).toLocaleDateString()
+  ) {
+    fullDate = "Today";
+  }
+
+  return `${fullDate} at ${hours}:${minutes} ${amOrPm}`;
+};

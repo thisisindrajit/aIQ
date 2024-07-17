@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Search } from "lucide-react";
 import { FC, ChangeEvent, FormEvent, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 const CSearchBar: FC<{
   inngestContentGenerationFunctionCaller: (
@@ -30,7 +31,36 @@ const CSearchBar: FC<{
       return alert("Please enter a search query!");
 
     setSearchQuery("");
-    await inngestContentGenerationFunctionCaller(formattedSearchQuery, userId);
+
+    toast.success(
+      <div className="text-sm/loose">
+        Hurray 🥳, your request for search query{" "}
+        <span className="font-semibold italic">{searchQuery}</span> has been
+        queued! You will receive a notification when the AI generated snippet is
+        available.
+      </div>,
+      {
+        duration: 10000,
+      }
+    );
+
+    try {
+      await inngestContentGenerationFunctionCaller(
+        formattedSearchQuery,
+        userId
+      );
+    } catch (error) {
+      toast.error(
+        <div className="text-sm/loose">
+          Error while generating snippet for search query{" "}
+          <span className="font-semibold italic">{searchQuery}</span>! Please
+          try again.
+        </div>,
+        {
+          duration: 10000,
+        }
+      );
+    }
   };
 
   return (
@@ -47,7 +77,11 @@ const CSearchBar: FC<{
           value={searchQuery}
           onChange={(e) => changeHandler(e)}
         />
-        <Button size="icon" type="submit" className="rounded-full bg-tertiary text-tertiary-foreground hover:bg-tertiary/90">
+        <Button
+          size="icon"
+          type="submit"
+          className="rounded-full bg-tertiary text-tertiary-foreground hover:bg-tertiary/90"
+        >
           <ArrowRight className="h-5 w-5" />
         </Button>
       </form>

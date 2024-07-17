@@ -12,14 +12,14 @@ const Dashboard = async () => {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/");
+    redirect(`${process.env.NEXT_PUBLIC_BASE_URL}`);
   }
 
   const getSnippets = async (lastSnippetId: string) => {
-    "use server"
-    
+    "use server";
+
     const NO_OF_SNIPPETS_TO_TAKE = 10;
-    
+
     if (lastSnippetId === "0") {
       return await prisma.snippets.findMany({
         include: { snippet_type_and_data_mapping: true },
