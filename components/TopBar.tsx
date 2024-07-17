@@ -4,11 +4,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
 import CNotificationBar from "./CNotificationBar";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 
-const TopBar: FC = () => {
-  const { userId } = auth();
+const TopBar: FC = async () => {
+  const user = await currentUser();
 
   const getNotificationsForUser = async () => {
     "use server"
@@ -19,7 +19,7 @@ const TopBar: FC = () => {
         list_notification_types: true,
       },
       where: {
-        notification_receiver: userId,
+        notification_receiver: user?.id,
       },
       orderBy: {
         xata_createdat: "desc",

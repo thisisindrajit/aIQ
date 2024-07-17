@@ -5,6 +5,7 @@ import CSnippet from "./CSnippet";
 import { Prisma } from "@prisma/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
+import { lowercaseKeys } from "@/utilities/commonUtilities";
 
 type TSnippets = Prisma.snippetsGetPayload<{
   include: {
@@ -55,75 +56,32 @@ const CSnippetsHolder: FC<{
         <Fragment>
           {data.pages.map((page, index) => (
             <Fragment key={index}>
-              {page.map((snippet) => (
-                <CSnippet
-                  key={snippet.xata_id}
-                  title={snippet.snippet_title}
-                  whatOrWho={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
-                        )[0].data
-                      )
-                    )["what/who"] ?? "No data 😭"
-                  }
-                  why={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["why"] ?? "No data 😭"
-                  }
-                  when={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["when"] ?? "No data 😭"
-                  }
-                  where={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["where"] ?? "No data 😭"
-                  }
-                  how={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["how"] ?? "No data 😭"
-                  }
-                  hasAmazingFacts={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["amazing facts"]?.length > 0
-                  }
-                  amazingFacts={
-                    JSON.parse(
-                      JSON.stringify(
-                        snippet.snippet_type_and_data_mapping.filter(
-                          (x) => x.type === "rec_cqafk3325jvdoj83gfcg"
-                        )[0].data
-                      )
-                    )["amazing facts"] ?? []
-                  }
-                />
-              ))}
+              {page.map((snippet) => {
+                const snippetData = lowercaseKeys(
+                  JSON.parse(
+                    JSON.stringify(
+                      snippet.snippet_type_and_data_mapping.filter(
+                        (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
+                      )[0].data
+                    )
+                  )
+                );
+
+                return (
+                  <CSnippet
+                    key={snippet.xata_id}
+                    generatedByAi={snippet.generated_by_ai || false}
+                    title={snippet.snippet_title}
+                    whatOrWho={snippetData["what/who"] ?? "No data 😭"}
+                    why={snippetData["why"] ?? "No data 😭"}
+                    when={snippetData["when"] ?? "No data 😭"}
+                    where={snippetData["where"] ?? "No data 😭"}
+                    how={snippetData["how"] ?? "No data 😭"}
+                    hasAmazingFacts={snippetData["amazing facts"]?.length > 0}
+                    amazingFacts={snippetData["amazing facts"] ?? []}
+                  />
+                );
+              })}
             </Fragment>
           ))}
         </Fragment>

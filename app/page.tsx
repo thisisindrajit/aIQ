@@ -1,6 +1,5 @@
 "use server";
 
-import { Fragment } from "react";
 import TopBar from "@/components/TopBar";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -11,16 +10,16 @@ const Home = async () => {
   const { userId }: { userId: string | null } = auth();
   const aIQDetails = {
     title: "aIQ",
-    whatOrWho: "AI + IQ",
-    when: "2021",
-    where: "India",
-    why: "To enhance your knowledge",
-    how: "One snippet at a time",
+    whatOrWho: "aIQ (AI + IQ) is an AI-powered ed-tech social media platform that generates and presents bite-sized, comprehensive content on user-requested topics. It features AI-generated educational snippets based on the 5W1H framework along with a social media-style infinite scroll functionality. The platform is designed for anyone who is intellectually curious.",
+    when: "aIQ is used when quick, reliable information is needed on a topic, making it ideal for study sessions, research, or moments of curiosity. It serves as a supplementary tool for formal education and can replace idle time typically spent on social media. The first prototype is being developed as part of the Xata hackathon, with future development planned to expand its features and capabilities.",
+    where: "aIQ  is designed for use in educational institutions, professional development settings, and personal learning environments. The platform's versatility allows it to be integrated into diverse learning contexts, from classrooms to corporate training programs.",
+    why: "aIQ bridges the gap between engaging social media content and in-depth educational material, making learning more accessible and enjoyable. It provides quick, comprehensive information on various topics, encouraging continuous learning through an addictive interface.",
+    how: "aIQ utilizes advanced AI, Retrieval-Augmented Generation (RAG), and LLMs for understanding user queries and generating relevant content. Users interact with the platform by inputting topics of interest and swiping through AI-generated snippets.",
     hasAmazingFacts: false,
   };
 
   if (userId) {
-    redirect("/user/dashboard");
+    redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
   return (
@@ -29,7 +28,7 @@ const Home = async () => {
       {/* Landing page grid */}
       <div className="flex flex-col lg:flex-row w-full gap-2 lg:gap-4">
         {/* First grid */}
-        <div className="flex flex-col gap-2 lg:gap-4">
+        <div className="flex flex-col gap-2 lg:gap-4 w-full">
           {/* aIQ motto */}
           <div className="bg-primary/25 text-2xl/relaxed sm:text-3xl/relaxed xl:text-4xl/relaxed text-center p-6 sm:p-12 rounded-lg">
             Where{" "}
@@ -60,15 +59,17 @@ const Home = async () => {
           </div>
         </div>
         {/* Second grid (only snippet) */}
-        <CSnippet
-          title={aIQDetails.title}
-          whatOrWho={aIQDetails.whatOrWho}
-          why={aIQDetails.why}
-          when={aIQDetails.when}
-          where={aIQDetails.where}
-          how={aIQDetails.how}
-          hasAmazingFacts={aIQDetails.hasAmazingFacts}
-        />
+        <div className="w-full lg:w-[50%] xl:w-full">
+          <CSnippet
+            title={aIQDetails.title}
+            whatOrWho={aIQDetails.whatOrWho}
+            why={aIQDetails.why}
+            when={aIQDetails.when}
+            where={aIQDetails.where}
+            how={aIQDetails.how}
+            hasAmazingFacts={aIQDetails.hasAmazingFacts}
+          />
+        </div>
       </div>
       {/* Footer */}
       <div>

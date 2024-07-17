@@ -13,6 +13,7 @@ import { Card, CardContent } from "./ui/card";
 import { separateSentences } from "@/utilities/commonUtilities";
 
 interface ICSnippetProps {
+  generatedByAi?: boolean;
   title: string;
   whatOrWho: string;
   when: string;
@@ -24,6 +25,7 @@ interface ICSnippetProps {
 }
 
 const CSnippet: FC<ICSnippetProps> = ({
+  generatedByAi = false,
   title,
   whatOrWho,
   when,
@@ -40,18 +42,18 @@ const CSnippet: FC<ICSnippetProps> = ({
 
   const getCurrentSlideText = (current: number) => {
     switch (current) {
-      case 1:
+      case 0:
         return "🧑 What/Who";
-      case 2:
+      case 1:
         return "🕒 When";
-      case 3:
+      case 2:
         return "📍 Where";
-      case 4:
+      case 3:
         return "🤔 Why";
-      case 5:
+      case 4:
         return "🛠️ How";
       default:
-        return `Slide ${current + 1} of ${count}`;
+        return `Slide ${current} of ${count}`;
     }
   };
 
@@ -61,10 +63,10 @@ const CSnippet: FC<ICSnippetProps> = ({
     }
 
     setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
+    setCurrent(api.selectedScrollSnap());
 
     api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
+      setCurrent(api.selectedScrollSnap());
     });
   }, [api]);
 
@@ -76,7 +78,7 @@ const CSnippet: FC<ICSnippetProps> = ({
           {title}
         </div>
         <div className="text-xs font-medium bg-accent text-accent-foreground py-1 px-2 w-fit rounded-lg">
-          5W1H
+          5W1H {generatedByAi && `(AI generated)`}
         </div>
       </div>
       {/* 5W1H carousel */}
@@ -108,7 +110,8 @@ const CSnippet: FC<ICSnippetProps> = ({
                     )}
                   </CardContent>
                   <span className="text-sm px-2 py-1 bg-neutral-50 border border-neutral-300 rounded-lg w-fit self-end">
-                    👆🏻 Swipe left or right to view more
+                    👆🏻 Swipe left for knowing{" "}
+                    {getCurrentSlideText((current + 1) % count)}
                   </span>
                 </Card>
               </CarouselItem>

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ReactNode } from "react";
+import CReactQueryProvider from "@/providers/CReactQueryProvider";
 
 import "./globals.css";
-import CReactQueryProvider from "@/providers/CReactQueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "aIQ",
@@ -51,6 +52,17 @@ export default function RootLayout({
         <body>
           <CReactQueryProvider>
             <div className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
+              <Toaster
+                theme="light"
+                richColors={true}
+                expand={true}
+                closeButton={true}
+                toastOptions={{
+                  style: {
+                    fontFamily: `"Satoshi", sans-serif`,
+                  },
+                }}
+              />
               {children}
             </div>
           </CReactQueryProvider>

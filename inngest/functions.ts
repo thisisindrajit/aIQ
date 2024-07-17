@@ -57,7 +57,7 @@ export const generateSnippet = inngest.createFunction(
     if (topic.generatedByLlm && topic.data.toLowerCase() === "no information") {
       await prisma.user_notifications.create({
         data: {
-          notification: `No information found for the search query - ${searchQuery}. Please try again with a different search query.`,
+          notification: `No information found for ${searchQuery}`,
           notification_creator: process.env.AIQ_AI_USER_ID!,
           notification_receiver: userId,
           notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
@@ -91,7 +91,7 @@ export const generateSnippet = inngest.createFunction(
             )
           );
 
-          if(!similarTextChunks || similarTextChunks.length === 0) {
+          if (!similarTextChunks || similarTextChunks.length === 0) {
             throw new Error();
           }
 
@@ -114,7 +114,7 @@ export const generateSnippet = inngest.createFunction(
     if (similarTextChunks.success === false || !similarTextChunks.data) {
       await prisma.user_notifications.create({
         data: {
-          notification: `Some error occurred while generating snippet for the search query - ${searchQuery}. Please try again.`,
+          notification: `${searchQuery}`,
           notification_creator: process.env.AIQ_AI_USER_ID!,
           notification_receiver: userId,
           notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
@@ -174,7 +174,7 @@ export const generateSnippet = inngest.createFunction(
 
           await prisma.user_notifications.create({
             data: {
-              notification: `Generated snippet for the search query - ${searchQuery}. The snippet id is ${createdSnippet.xata_id}.`,
+              notification: `${searchQuery}|${process.env.NEXT_PUBLIC_BASE_URL}/user/snippet/${createdSnippet.xata_id}`,
               notification_creator: process.env.AIQ_AI_USER_ID!,
               notification_receiver: userId,
               notification_type: "rec_cqabeqdt6qchmfcgs03g", // notification type for generated snippet
@@ -202,7 +202,7 @@ export const generateSnippet = inngest.createFunction(
     if (snippet.success === false) {
       await prisma.user_notifications.create({
         data: {
-          notification: `Some error occurred while generating snippet for the search query - ${searchQuery}. Please try again.`,
+          notification: `${searchQuery}`,
           notification_creator: process.env.AIQ_AI_USER_ID!,
           notification_receiver: userId,
           notification_type: "rec_cqabeltt6qchmfcgs030", // notification type for error
