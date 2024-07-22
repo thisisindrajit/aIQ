@@ -3,15 +3,16 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
-import CNotificationBar from "./CNotificationBar";
+import CNotificationBar from "../CNotificationBar";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
+import CTopBarHolder from "./CTopBarHolder";
 
 const TopBar: FC = async () => {
   const user = await currentUser();
 
   const getNotificationsForUser = async () => {
-    "use server"
+    "use server";
 
     return await prisma.user_notifications.findMany({
       take: 15,
@@ -25,10 +26,10 @@ const TopBar: FC = async () => {
         xata_createdat: "desc",
       },
     });
-  }
+  };
 
   return (
-    <div className="w-full flex items-center justify-between">
+    <CTopBarHolder>
       {/* Logo */}
       <div className="flex items-center justify-center space-x-3 h-8">
         <Image src="/logo.svg" alt="aIQ Logo" width={28} height={28} />
@@ -63,7 +64,7 @@ const TopBar: FC = async () => {
           </Button>
         </SignInButton>
       </SignedOut>
-    </div>
+    </CTopBarHolder>
   );
 };
 

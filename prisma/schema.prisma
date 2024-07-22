@@ -107,6 +107,7 @@ model snippets {
   xata_updatedat                DateTime                        @default(now()) @db.Timestamptz(6)
   xata_id                       String                          @unique(map: "snippets__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   snippet_title                 String                          @db.VarChar(255)
+  requestor_name                String?                         @db.VarChar
   snippet_likes                 snippet_likes[]
   snippet_notes                 snippet_notes[]
   snippet_saves                 snippet_saves[]

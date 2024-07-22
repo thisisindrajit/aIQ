@@ -3,16 +3,17 @@ import { FireworksEmbeddings } from "@langchain/community/embeddings/fireworks";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import * as cheerio from "cheerio";
+import { DocumentInterface } from "@langchain/core/documents";
 
 // Utility function for fetching search results for a given topic from Serper API
-export async function searchForSources(topic: string) {
+export async function searchForSources(topic: string): Promise<string> {
   const serperApiKey = process.env.SERPER_API_KEY;
   let requestHeaders = new Headers();
 
   requestHeaders.append("X-API-KEY", serperApiKey || "");
   requestHeaders.append("Content-Type", "application/json");
 
-  let raw: string = JSON.stringify({
+  let raw = JSON.stringify({
     q: topic,
   });
 
@@ -34,26 +35,22 @@ export async function searchForSources(topic: string) {
     throw "Error fetching search results from Serper API";
   }
 
-  const searchResultsText = await searchResults.text();
-
-  return searchResultsText;
+  return await searchResults.text();
 }
 
 // Utility function for normalizing search results
-export async function normalizeData(searchResults: string) {
+export async function normalizeData(
+  searchResults: string
+): Promise<{ title: string; link: string }[]> {
   const parsedSearchResults = JSON.parse(searchResults);
-  const extractedTitleAndLinks: { title: string; link: string }[] =
-    extractTitleAndLinks(parsedSearchResults);
+  const extractedTitleAndLinks = extractTitleAndLinks(parsedSearchResults);
 
-  return extractedTitleAndLinks
-    .slice(0, 5)
-    .map(({ title, link }: { title: string; link: string }) => ({
-      title,
-      link,
-    }));
+  return extractedTitleAndLinks.slice(0, 5); // Limiting to 5 results for now
 }
 
-function extractTitleAndLinks(obj: { [x: string]: any }) {
+function extractTitleAndLinks(obj: {
+  [x: string]: any;
+}): { title: string; link: string }[] {
   const results: { title: string; link: string }[] = [];
 
   function traverse(currentObj: { [x: string]: any }) {
@@ -84,12 +81,12 @@ function extractTitleAndLinks(obj: { [x: string]: any }) {
 export async function fetchHtmlContentAndVectorize(
   searchQuery: string,
   item: { title: string; link: string }
-) {
+): Promise<null | DocumentInterface[]> {
   // const embeddings = new MistralAIEmbeddings({
   //   apiKey: process.env.MISTRAL_API_KEY,
   // });
   const embeddings = new FireworksEmbeddings();
-  const htmlContent = await fetchPageContent(item.link);
+  const htmlContent = await fetchPageContentFromLink(item.link);
 
   if (htmlContent && htmlContent.length < 100) return null; // Ignoring content with less than 100 characters
 
@@ -107,11 +104,11 @@ export async function fetchHtmlContentAndVectorize(
   return await vectorStore.similaritySearch(searchQuery, 2);
 }
 
-// Utility function to fetch page content from the given link
-async function fetchPageContent(link: string) {
+// Helper function to fetch page content from a given link
+async function fetchPageContentFromLink(link: string): Promise<string> {
   try {
     const userAgents = [
-      "aiq.fyi Bot",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0",
       "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)", // Facebook user agent
     ];
 
@@ -130,18 +127,12 @@ async function fetchPageContent(link: string) {
   }
 }
 
-async function fetchDataFromUrl(url: string, userAgent: string) {
+// Helper function to fetch data from a given URL
+async function fetchDataFromUrl(
+  url: string,
+  userAgent: string
+): Promise<string> {
   const headers: HeadersInit = {
-    Accept:
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Encoding": "gzip, deflate, br",
-    Connection: "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-User": "?1",
-    "Sec-Fetch-Dest": "document",
-    "Cache-Control": "max-age=0",
     "User-agent": userAgent,
   };
 
@@ -157,8 +148,8 @@ async function fetchDataFromUrl(url: string, userAgent: string) {
   return await response.text();
 }
 
-// Utility function to extract main content from the HTML page using cheerio
-function extractMainContent(html: string) {
+// Helper function to extract main content from the HTML page using cheerio
+function extractMainContent(html: string): string {
   const $ = html.length ? cheerio.load(html) : null;
 
   if (!$) return "";
@@ -169,7 +160,7 @@ function extractMainContent(html: string) {
 }
 
 // Utility function to normalize chunk data
-export function normalizeChunks(obj: { [x: string]: any }) {
+export function normalizeChunks(obj: { [x: string]: any }): string {
   return obj.data
     .map(
       (
@@ -219,7 +210,9 @@ export function lowercaseKeys<T extends Record<string, any>>(
 }
 
 // Utility function to convert date to a pretty format in local timezone
-export const convertToPrettyDateFormatInLocalTimezone = (inputDate: Date) => {
+export function convertToPrettyDateFormatInLocalTimezone(
+  inputDate: Date
+): string {
   const date = inputDate.getDate();
   const month = inputDate.getMonth() + 1;
   const year = inputDate.getFullYear();
@@ -253,4 +246,4 @@ export const convertToPrettyDateFormatInLocalTimezone = (inputDate: Date) => {
   }
 
   return `${fullDate} at ${hours}:${minutes} ${amOrPm}`;
-};
+}

@@ -1,4 +1,4 @@
-import TopBar from "@/components/TopBar";
+import TopBar from "@/components/TopBar"
 import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
 import { TrendingUp } from "lucide-react";

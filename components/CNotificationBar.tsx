@@ -94,18 +94,19 @@ const CNotificationBar: FC<{
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="w-[95%] sm:w-[24rem] px-2 sm:px-4 max-h-screen overflow-auto"
+        className="w-[95%] sm:w-[24rem] px-2 sm:px-4 max-h-screen overflow-auto z-[100]"
       >
         <SheetHeader>
           <SheetTitle>Latest notifications</SheetTitle>
-          {previousNotificationTimestampRef.current && (
-            <div className="text-xs font-medium text-primary">
-              Last notification received -{" "}
-              {convertToPrettyDateFormatInLocalTimezone(
-                previousNotificationTimestampRef.current
-              )}
-            </div>
-          )}
+          {notifications.length > 0 &&
+            previousNotificationTimestampRef.current && (
+              <div className="text-xs font-medium text-primary">
+                Last notification received -{" "}
+                {convertToPrettyDateFormatInLocalTimezone(
+                  previousNotificationTimestampRef.current
+                )}
+              </div>
+            )}
           <Separator className="bg-foreground" />
           <SheetDescription asChild>
             <div className="flex flex-col gap-2">
@@ -171,8 +172,7 @@ const CNotificationBar: FC<{
                           </span>
                           . You can view it by clicking{" "}
                           <Link
-                            href={snippetLink}
-                            target="_blank"
+                            href={`${process.env.NEXT_PUBLIC_BASE_URL}/${snippetLink}`}
                             className="font-semibold underline"
                           >
                             here
