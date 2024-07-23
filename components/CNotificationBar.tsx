@@ -114,40 +114,49 @@ const CNotificationBar: FC<{
                 <div className="text-center w-full my-2">No notifications!</div>
               ) : (
                 notifications.map((notification) => {
+                  const searchQuery = notification.notification.split("|")[0];
+
                   if (
+                    notification.list_notification_types?.notification_type ===
+                    "no information"
+                  ) {
+                    return (
+                      <div
+                        key={notification.xata_id}
+                        className="bg-orange-300/10 border border-orange-500 text-orange-500 p-3 rounded-md flex flex-col gap-4 leading-loose text-justify"
+                      >
+                        <span>
+                          No information found for search query{" "}
+                          <span className="font-semibold italic">
+                            {searchQuery}
+                          </span>
+                          . Please try again with a different query.
+                        </span>
+                        <div className="bg-background text-xs font-medium p-2 text-foreground w-fit rounded-md border border-orange-500">
+                          {convertToPrettyDateFormatInLocalTimezone(
+                            notification.xata_createdat
+                          )}
+                        </div>
+                      </div>
+                    );
+                  } else if (
                     notification.list_notification_types?.notification_type ===
                     "error"
                   ) {
-                    const searchQuery = notification.notification.split("|")[0];
-                    const doesSearchQueryContainNoInformation =
-                      notification.notification
-                        .toLowerCase()
-                        .includes("no information");
-
                     return (
                       <div
                         key={notification.xata_id}
                         className="bg-destructive/10 border border-destructive text-destructive p-3 rounded-md flex flex-col gap-4 leading-loose text-justify"
                       >
-                        {doesSearchQueryContainNoInformation ? (
-                          <span>
-                            Some error occurred 😭 while generating snippet -{" "}
-                            <span className="font-semibold italic">
-                              {searchQuery}
-                            </span>
-                            .
+                        <span>
+                          Some error occurred 😭 while generating snippet for
+                          search query{" "}
+                          <span className="font-semibold italic">
+                            {searchQuery}
                           </span>
-                        ) : (
-                          <span>
-                            Some error occurred 😭 while generating snippet for
-                            search query{" "}
-                            <span className="font-semibold italic">
-                              {searchQuery}
-                            </span>
-                            . Please try again with the same query or a similar
-                            query.
-                          </span>
-                        )}
+                          . Please try again with the same query or a similar
+                          query.
+                        </span>
                         <div className="bg-background text-xs font-medium p-2 text-foreground w-fit rounded-md border border-destructive">
                           {convertToPrettyDateFormatInLocalTimezone(
                             notification.xata_createdat
@@ -156,7 +165,6 @@ const CNotificationBar: FC<{
                       </div>
                     );
                   } else {
-                    const searchQuery = notification.notification.split("|")[0];
                     const snippetLink = notification.notification.split("|")[1];
 
                     return (

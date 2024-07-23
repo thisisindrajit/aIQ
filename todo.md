@@ -6,13 +6,13 @@
   
 - [X] Add requested on and requested by data in snippet (High priority)
 
-- [ ] Add retry mechanism in function (High priority)
+- [X] Add retry mechanism in function (High priority)
 
 - [X] Add vercel analytics and speed insights packages (High priority)
 
 - [X] Go to user notifications and change all generated snippet urls to relative instead of absolute urls. After that, validate if all links to specific snippets are working correctly. (High priority)
 
-- [ ] Add a column references and storing results from serper API in this column (High priority)
+- [ ] Add column references and storing results from serper API in this column (High priority)
 
 - [ ] Add save logic (High priority)
 
@@ -36,6 +36,6 @@
   
 - [ ] Change direct ingest function calling to API call if possible and see if there is any advantages (Low priority)
 
-- [ ] Track all user viewed snippets and generate quizzes to test their knowledge and also for showing recaps (low priority)
+- [ ] Track all user viewed snippets and generate quizzes to test their knowledge and also for showing recaps (Low priority)
 
-- [ ] Do a reels like infinite scroll feature in mobile devices (less priority)
+- [ ] Do a reels like infinite scroll feature in mobile devices (Low priority)

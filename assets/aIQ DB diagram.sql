@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS "list_snippet_types" (
 CREATE TABLE IF NOT EXISTS "snippet_type_and_data_mapping" (
   "snippet_id" text,
   "type" text, 	
-  "data" jsonb NOT NULL
+  "data" jsonb NOT NULL,
+  "references" jsonb
 );
 
 CREATE TABLE IF NOT EXISTS "snippet_likes" (

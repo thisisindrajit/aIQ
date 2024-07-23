@@ -93,6 +93,7 @@ model snippet_type_and_data_mapping {
   xata_id            String              @unique(map: "snippet_type_and_data_mapping__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
   xata_version       Int                 @default(0)
   xata_createdat     DateTime            @default(now()) @db.Timestamptz(6)
+  references         Json?
   snippets           snippets?           @relation(fields: [snippet_id], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
   list_snippet_types list_snippet_types? @relation(fields: [type], references: [xata_id], onDelete: NoAction, onUpdate: NoAction)
 }

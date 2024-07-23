@@ -41,17 +41,19 @@ export async function searchForSources(topic: string): Promise<string> {
 // Utility function for normalizing search results
 export async function normalizeData(
   searchResults: string
-): Promise<{ title: string; link: string }[]> {
+): Promise<{ title: string; description: string; link: string }[]> {
   const parsedSearchResults = JSON.parse(searchResults);
-  const extractedTitleAndLinks = extractTitleAndLinks(parsedSearchResults);
+  const extractedTitleDescAndLinks =
+    extractTitleDescAndLinks(parsedSearchResults);
 
-  return extractedTitleAndLinks.slice(0, 5); // Limiting to 5 results for now
+  const limit = Number(process.env.NEXT_PUBLIC_LIMIT_FOR_SEARCH_RESULTS ?? 6);
+  return extractedTitleDescAndLinks.slice(0, limit);
 }
 
-function extractTitleAndLinks(obj: {
+function extractTitleDescAndLinks(obj: {
   [x: string]: any;
-}): { title: string; link: string }[] {
-  const results: { title: string; link: string }[] = [];
+}): { title: string; description: string; link: string }[] {
+  const results: { title: string; description: string; link: string }[] = [];
 
   function traverse(currentObj: { [x: string]: any }) {
     if (currentObj && typeof currentObj === "object") {
@@ -62,6 +64,7 @@ function extractTitleAndLinks(obj: {
       ) {
         results.push({
           title: currentObj.title,
+          description: currentObj.snippet ?? "No description available 😭",
           link: currentObj.link,
         });
       }
@@ -80,7 +83,7 @@ function extractTitleAndLinks(obj: {
 // Utility function to vectorize the content and store in memory vector database
 export async function fetchHtmlContentAndVectorize(
   searchQuery: string,
-  item: { title: string; link: string }
+  item: { title: string; description: string; link: string }
 ): Promise<null | DocumentInterface[]> {
   // const embeddings = new MistralAIEmbeddings({
   //   apiKey: process.env.MISTRAL_API_KEY,
@@ -160,13 +163,23 @@ function extractMainContent(html: string): string {
 }
 
 // Utility function to normalize chunk data
-export function normalizeChunks(obj: { [x: string]: any }): string {
-  return obj.data
+export function normalizeChunks(
+  chunksArray: (
+    | {
+        pageContent: string;
+        metadata: Record<string, any>;
+        id?: string | undefined;
+      }[]
+    | null
+  )[]
+): string {
+  return chunksArray
     .map(
       (
         array?:
           | {
-              metadata: { title: string; link: string };
+              metadata: Record<string, any>;
+              id?: string | undefined;
               pageContent: string;
             }[]
           | null

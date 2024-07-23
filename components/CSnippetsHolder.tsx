@@ -63,7 +63,7 @@ const CSnippetsHolder: FC<{
                     JSON.stringify(
                       snippet.snippet_type_and_data_mapping.filter(
                         (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
-                      )[0].data
+                      )[0]?.data ?? {}
                     )
                   )
                 );

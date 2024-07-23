@@ -37,7 +37,7 @@ const CSearchBar: FC<{
         Hurray 🥳, your request for search query{" "}
         <span className="font-semibold italic">{searchQuery}</span> has been
         queued! You will receive a notification when the AI generated snippet is
-        available.
+        available. Meanwhile you can check out the trending snippets 😎.
       </div>,
       {
         duration: 10000,
