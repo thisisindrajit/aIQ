@@ -76,8 +76,8 @@ const CSnippetsHolder: FC<{
                     requestorName={snippet.requestor_name}
                     requestedOn={snippet.xata_createdat}
                     whatOrWho={
-                      snippet5w1hData["whatorwho"]?.length > 0
-                        ? snippet5w1hData["whatorwho"]
+                      snippet5w1hData["whatorwho"]?.length > 0 || snippet5w1hData["what"]?.length > 0 || snippet5w1hData["who"]?.length > 0
+                        ? snippet5w1hData["whatorwho"] ?? snippet5w1hData["what"] ?? snippet5w1hData["who"]
                         : []
                     }
                     why={
