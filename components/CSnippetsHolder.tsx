@@ -58,12 +58,12 @@ const CSnippetsHolder: FC<{
           {data.pages.map((page, index) => (
             <Fragment key={index}>
               {page.map((snippet) => {
-                const snippetData = lowercaseKeys(
+                const snippet5w1hData = lowercaseKeys(
                   JSON.parse(
                     JSON.stringify(
                       snippet.snippet_type_and_data_mapping.filter(
                         (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
-                      )[0].data
+                      )[0]?.data ?? {}
                     )
                   )
                 );
@@ -73,13 +73,41 @@ const CSnippetsHolder: FC<{
                     key={snippet.xata_id}
                     generatedByAi={snippet.generated_by_ai || false}
                     title={snippet.snippet_title}
-                    whatOrWho={snippetData["what/who"] ?? "No data 😭"}
-                    why={snippetData["why"] ?? "No data 😭"}
-                    when={snippetData["when"] ?? "No data 😭"}
-                    where={snippetData["where"] ?? "No data 😭"}
-                    how={snippetData["how"] ?? "No data 😭"}
-                    hasAmazingFacts={snippetData["amazing facts"]?.length > 0}
-                    amazingFacts={snippetData["amazing facts"] ?? []}
+                    requestorName={snippet.requestor_name}
+                    requestedOn={snippet.xata_createdat}
+                    whatOrWho={
+                      snippet5w1hData["whatorwho"]?.length > 0
+                        ? snippet5w1hData["whatorwho"]
+                        : []
+                    }
+                    why={
+                      snippet5w1hData["why"]?.length > 0
+                        ? snippet5w1hData["why"]
+                        : []
+                    }
+                    when={
+                      snippet5w1hData["when"]?.length > 0
+                        ? snippet5w1hData["when"]
+                        : []
+                    }
+                    where={
+                      snippet5w1hData["where"]?.length > 0
+                        ? snippet5w1hData["where"]
+                        : []
+                    }
+                    how={
+                      snippet5w1hData["how"]?.length > 0
+                        ? snippet5w1hData["how"]
+                        : []
+                    }
+                    hasAmazingFacts={
+                      snippet5w1hData["amazingfacts"]?.length > 0
+                    }
+                    amazingFacts={
+                      snippet5w1hData["amazingfacts"]?.length > 0
+                        ? snippet5w1hData["amazingfacts"]
+                        : []
+                    }
                   />
                 );
               })}

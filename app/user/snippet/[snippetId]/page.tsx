@@ -17,21 +17,21 @@ const Snippet: FC<{
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
-  const snippetData = await prisma.snippets.findUnique({
+  const snippet = await prisma.snippets.findUnique({
     include: { snippet_type_and_data_mapping: true },
     where: {
       xata_id: snippetId,
     },
   });
 
-  if (!snippetData) {
+  if (!snippet) {
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
   const snippet5w1hData = lowercaseKeys(
     JSON.parse(
       JSON.stringify(
-        snippetData.snippet_type_and_data_mapping.filter(
+        snippet.snippet_type_and_data_mapping.filter(
           (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
         )[0].data
       )
@@ -52,16 +52,30 @@ const Snippet: FC<{
           </Button>
         </Link>
         <CSnippet
-          generatedByAi={snippetData.generated_by_ai || false}
-          key={snippetData.xata_id}
-          title={snippetData.snippet_title}
-          whatOrWho={snippet5w1hData["what/who"] ?? "No data 😭"}
-          why={snippet5w1hData["why"] ?? "No data 😭"}
-          when={snippet5w1hData["when"] ?? "No data 😭"}
-          where={snippet5w1hData["where"] ?? "No data 😭"}
-          how={snippet5w1hData["how"] ?? "No data 😭"}
-          hasAmazingFacts={snippet5w1hData["amazing facts"]?.length > 0}
-          amazingFacts={snippet5w1hData["amazing facts"] ?? []}
+          key={snippet.xata_id}
+          generatedByAi={snippet.generated_by_ai || false}
+          title={snippet.snippet_title}
+          requestorName={snippet.requestor_name}
+          requestedOn={snippet.xata_createdat}
+          whatOrWho={
+            snippet5w1hData["whatorwho"]?.length > 0
+              ? snippet5w1hData["whatorwho"]
+              : []
+          }
+          why={snippet5w1hData["why"]?.length > 0 ? snippet5w1hData["why"] : []}
+          when={
+            snippet5w1hData["when"]?.length > 0 ? snippet5w1hData["when"] : []
+          }
+          where={
+            snippet5w1hData["where"]?.length > 0 ? snippet5w1hData["where"] : []
+          }
+          how={snippet5w1hData["how"]?.length > 0 ? snippet5w1hData["how"] : []}
+          hasAmazingFacts={snippet5w1hData["amazingfacts"]?.length > 0}
+          amazingFacts={
+            snippet5w1hData["amazingfacts"]?.length > 0
+              ? snippet5w1hData["amazingfacts"]
+              : []
+          }
         />
       </div>
     </div>

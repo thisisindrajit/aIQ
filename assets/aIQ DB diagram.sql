@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS "snippets" (
   "generated_by_ai" boolean DEFAULT true,
   "snippet_title" varchar(255) NOT NULL,
   "likes_count" bigint NOT NULL DEFAULT 0,
-  "requested_by" text
+  "requested_by" text,
+  "requestor_name" varchar
 );
 
 CREATE TABLE IF NOT EXISTS "list_snippet_types" (
@@ -42,7 +43,8 @@ CREATE TABLE IF NOT EXISTS "list_snippet_types" (
 CREATE TABLE IF NOT EXISTS "snippet_type_and_data_mapping" (
   "snippet_id" text,
   "type" text, 	
-  "data" jsonb NOT NULL
+  "data" jsonb NOT NULL,
+  "references" jsonb
 );
 
 CREATE TABLE IF NOT EXISTS "snippet_likes" (

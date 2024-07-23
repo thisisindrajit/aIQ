@@ -1,4 +1,4 @@
-import TopBar from "@/components/TopBar";
+import TopBar from "@/components/TopBar"
 import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
 import { TrendingUp } from "lucide-react";
@@ -62,7 +62,7 @@ const Dashboard = async () => {
       />
       <div className="flex gap-4 w-full 2xl:w-[90%] mx-auto">
         {/* Sidebar */}
-        <div className="hidden xl:flex flex-col bg-primary/10 min-w-[16rem] sticky p-3 h-80 top-8 rounded-lg gap-1.5 border border-primary my-3.5">
+        <div className="hidden xl:flex flex-col bg-primary/10 min-w-[16rem] sticky p-3 h-80 top-[5.5rem] rounded-lg gap-1.5 border border-primary my-3.5">
           <div className="bg-primary/75 text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
             <span>Trending snippets</span>
             <TrendingUp className="h-4 w-4" />
