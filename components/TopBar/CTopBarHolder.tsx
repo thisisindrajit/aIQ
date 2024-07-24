@@ -27,7 +27,7 @@ const CTopBarHolder: FC<{ children: ReactNode }> = ({ children }) => {
     window.addEventListener("scroll", handleScroll);
 
     // IMPORTANT: These classes are added at the end of useEffect to make sure that in case of slow loading, the top bar styling is not broken before the full JS is loaded
-    topBarElement?.classList.add("sticky", "top-4");
+    topBarElement?.classList.add("sticky", "top-2");
 
     return () => {
       window.removeEventListener("scroll", handleScroll);

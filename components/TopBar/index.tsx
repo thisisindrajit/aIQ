@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FC } from "react";
-import CNotificationBar from "../CNotificationBar";
+import CNotificationHolder from "../holders/CNotificationHolder";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 import CTopBarHolder from "./CTopBarHolder";
@@ -44,7 +44,9 @@ const TopBar: FC = async () => {
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
         <div className="flex items-center justify-center gap-4">
-          <CNotificationBar getNotificationsForUser={getNotificationsForUser} />
+          <CNotificationHolder
+            getNotificationsForUser={getNotificationsForUser}
+          />
           <UserButton
             appearance={{
               elements: {

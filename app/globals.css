@@ -80,6 +80,6 @@
   }
 
   .top-bar-on-scroll {
-    @apply p-3 bg-neutral-100 border border-neutral-400 rounded-md;
+    @apply p-3 bg-neutral-100 border border-neutral-400 shadow-lg rounded-md;
   }
 }

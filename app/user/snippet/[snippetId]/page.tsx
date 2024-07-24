@@ -33,7 +33,17 @@ const Snippet: FC<{
       JSON.stringify(
         snippet.snippet_type_and_data_mapping.filter(
           (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
-        )[0].data
+        )[0].data ?? {}
+      )
+    )
+  );
+
+  const references = lowercaseKeys(
+    JSON.parse(
+      JSON.stringify(
+        snippet.snippet_type_and_data_mapping.filter(
+          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
+        )[0]?.references ?? {}
       )
     )
   );
@@ -70,11 +80,13 @@ const Snippet: FC<{
             snippet5w1hData["where"]?.length > 0 ? snippet5w1hData["where"] : []
           }
           how={snippet5w1hData["how"]?.length > 0 ? snippet5w1hData["how"] : []}
-          hasAmazingFacts={snippet5w1hData["amazingfacts"]?.length > 0}
           amazingFacts={
             snippet5w1hData["amazingfacts"]?.length > 0
               ? snippet5w1hData["amazingfacts"]
               : []
+          }
+          references={
+            references.references?.length > 0 ? references.references : []
           }
         />
       </div>

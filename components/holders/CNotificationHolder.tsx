@@ -12,7 +12,7 @@ import {
 import { Bell } from "lucide-react";
 import { Prisma } from "@prisma/client";
 import { convertToPrettyDateFormatInLocalTimezone } from "@/utilities/commonUtilities";
-import { Separator } from "./ui/separator";
+import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -29,7 +29,7 @@ type TUserNotification = Prisma.user_notificationsGetPayload<{
   };
 }>;
 
-const CNotificationBar: FC<{
+const CNotificationHolder: FC<{
   getNotificationsForUser: () => Promise<TUserNotification[]>;
 }> = ({ getNotificationsForUser }) => {
   const DELAY_IN_SECONDS = 30;
@@ -205,4 +205,4 @@ const CNotificationBar: FC<{
   );
 };
 
-export default CNotificationBar;
+export default CNotificationHolder;
