@@ -146,8 +146,9 @@ export const generateSnippet = inngest.createFunction(
               1.Ensure the information is accurate and relevant to the main topic, avoiding any speculative or unsupported details.
               2.Highlight 2-4 important words or phrases using markdown bold format.
               3.Choose highlights that are key concepts, important terms, or significant details related to the category and main topic.
-              4.At least one sentence in each category must contain highlighted words.
-              5.Do not highlight the main topic itself.
+              4.Prioritize highlighting words that are separate words or phrases, rather than parts of a larger word or phrase.
+              5.At least one sentence in each category must contain highlighted words.
+              6.DO NOT HIGHLIGHT the main topic.
               Present the final result in JSON format with these keys: whatorwho, why, when, where, how, and amazingfacts. Include 3 general amazing facts about the main topic in the amazingfacts array if such information is available. Focus on providing a broad, generally applicable summary of the main topic, avoiding overly specific details or examples from the provided context. The goal is to create a summary that would be informative and relevant even without the specific context provided. If you lack sufficient credible information about the topic, return only an empty object.`,
             },
             {
