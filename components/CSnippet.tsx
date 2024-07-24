@@ -12,6 +12,7 @@ import {
 import { Card, CardContent } from "./ui/card";
 import Markdown from "react-markdown";
 import { convertToPrettyDateFormatInLocalTimezone } from "@/utilities/commonUtilities";
+import CReferenceHolder from "./holders/CReferenceHolder";
 
 interface ICSnippetProps {
   generatedByAi?: boolean;
@@ -23,8 +24,8 @@ interface ICSnippetProps {
   where: string[];
   why: string[];
   how: string[];
-  hasAmazingFacts: boolean;
-  amazingFacts?: string[];
+  amazingFacts: string[];
+  references: { link: string, title: string, description: string }[];
 }
 
 const CSnippet: FC<ICSnippetProps> = ({
@@ -37,8 +38,8 @@ const CSnippet: FC<ICSnippetProps> = ({
   where,
   why,
   how,
-  hasAmazingFacts,
   amazingFacts,
+  references
 }) => {
   const categoryArray = [whatOrWho, when, where, why, how];
   const [api, setApi] = useState<CarouselApi>();
@@ -91,8 +92,11 @@ const CSnippet: FC<ICSnippetProps> = ({
             by <span className="font-semibold italic">{requestorName}</span>
           </div>
         )}
-        <div className="text-xs font-medium bg-accent text-accent-foreground py-1 px-2 w-fit rounded-lg">
-          5W1H {generatedByAi && `(AI generated)`}
+        <div className="flex gap-2 items-center justify-center w-fit font-medium">
+          <div className="text-xs bg-accent text-accent-foreground py-1 px-2 w-fit rounded-lg">
+            5W1H {generatedByAi && `(AI generated)`}
+          </div>
+          {references?.length > 0 && <CReferenceHolder references={references} />}
         </div>
       </div>
       {/* 5W1H carousel */}
@@ -136,7 +140,7 @@ const CSnippet: FC<ICSnippetProps> = ({
         </Carousel>
       </div>
       {/* Amazing facts */}
-      {hasAmazingFacts && amazingFacts && amazingFacts.length > 0 && (
+      {amazingFacts?.length > 0 && (
         <div className="bg-accent/35 p-3 rounded-lg flex flex-col gap-4">
           <span className="bg-background text-foreground border border-foreground p-2 rounded-md w-fit">
             {`🤯 Amazing facts`}

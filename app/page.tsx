@@ -32,7 +32,7 @@ const Home = async () => {
       "aIQ utilizes advanced AI, Retrieval-Augmented Generation (RAG), and LLMs for understanding user queries and generating relevant content.",
       "Users interact with the platform by inputting topics of interest and swiping through AI-generated snippets.",
     ],
-    hasAmazingFacts: false,
+    amazingFacts: [],
   };
 
   if (userId) {
@@ -86,7 +86,8 @@ const Home = async () => {
             when={aIQDetails.when}
             where={aIQDetails.where}
             how={aIQDetails.how}
-            hasAmazingFacts={aIQDetails.hasAmazingFacts}
+            amazingFacts={aIQDetails.amazingFacts}
+            references={[]}
           />
         </div>
       </div>

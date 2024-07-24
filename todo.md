@@ -12,20 +12,20 @@
 
 - [X] Go to user notifications and change all generated snippet urls to relative instead of absolute urls. After that, validate if all links to specific snippets are working correctly. (High priority)
 
-- [ ] Add column references and storing results from serper API in this column (High priority)
+- [X] Add column references and storing results from serper API in this column (High priority)
 
+- [ ] Add like logic (Medium priority)
+  
 - [ ] Add save logic (High priority)
 
-- [ ] Add rewards logic (Daily XP, first snippet generation, first save, first note rewards) (High priority)
+- [ ] Add notes logic (Just plain text is enough for now) [Make it to markdown if possible] (High priority)
 
 ---
 
 - [ ] Add search logic (use Xata search feature) (Medium priority)
 
-- [ ] Add like logic (Medium priority)
-
-- [ ] Add notes logic (Just plain text is enough for now) [Make it to markdown if possible] (Medium priority)
-  
+- [ ] Add rewards logic (Daily XP, first snippet generation, first save, first note rewards) (Medium priority)
+ 
 - [ ] Add step for generating timelines for topics if they can be relevant (Medium priority)
 
 - [ ] Make web scraping more robust so that better similar chunks are found and try various methods for web scraping and getting good, reliable chunks (Medium priority)

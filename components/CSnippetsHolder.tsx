@@ -54,7 +54,7 @@ const CSnippetsHolder: FC<{
           Some error occurred while fetching trending snippets!
         </div>
       ) : (
-        <Fragment>
+        <div className="flex flex-col gap-6">
           {data.pages.map((page, index) => (
             <Fragment key={index}>
               {page.map((snippet) => {
@@ -67,6 +67,16 @@ const CSnippetsHolder: FC<{
                     )
                   )
                 );
+
+                const references = lowercaseKeys(
+                  JSON.parse(
+                    JSON.stringify(
+                      snippet.snippet_type_and_data_mapping.filter(
+                        (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
+                      )[0]?.references ?? {}
+                    )
+                  )
+                )
 
                 return (
                   <CSnippet
@@ -100,20 +110,18 @@ const CSnippetsHolder: FC<{
                         ? snippet5w1hData["how"]
                         : []
                     }
-                    hasAmazingFacts={
-                      snippet5w1hData["amazingfacts"]?.length > 0
-                    }
                     amazingFacts={
                       snippet5w1hData["amazingfacts"]?.length > 0
                         ? snippet5w1hData["amazingfacts"]
                         : []
                     }
+                    references={references.references?.length > 0 ? references.references : []}
                   />
                 );
               })}
             </Fragment>
           ))}
-        </Fragment>
+        </div>
       )}
       <div ref={ref} className="w-full text-center my-2">
         {isFetchingNextPage ? (
