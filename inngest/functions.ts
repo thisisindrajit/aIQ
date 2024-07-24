@@ -59,13 +59,13 @@ export const generateSnippet = inngest.createFunction(
               content: `Create a concise search query for the given input that can be used in a search engine API to retrieve general information about the input. The query should:
               1.Be no longer than 5-7 words
               2.Include the most relevant keywords related to the topic
-              3.Include "overview" or "introduction" if applicable to focus on general information
-              4.Do not add any quotation marks
+              3.Include "overview" or "wiki" if applicable to focus on general information
+              4.Do not add any quotation marks or extra words
               Return only the search query string, without any additional explanation or formatting. If you don't have any information about the input, just return NO INFORMATION.`,
             },
             { role: "user", content: searchQuery },
           ],
-          model: "llama3-8b-8192", // This is the best model for topic generation
+          model: "llama3-70b-8192", // This is the best model for topic generation
         });
 
         const generatedTopic = chatCompletion.choices[0]?.message?.content;
@@ -142,13 +142,12 @@ export const generateSnippet = inngest.createFunction(
           messages: [
             {
               role: "system",
-              content: `Here is my topic - ${searchQuery}. Generate a broad, general summary of the given topic using the 5W1H framework. Use the provided context as background information, but focus on creating a summary that applies to the topic in general rather than specific instances or examples from the context. For each category (What/Who, Why, When, Where, and How), provide 2 to 4 full-fledged and grammatically correct sentences as elements in an array. Use simple, concise language with minimal jargon to make it easily understandable. In each category:
-              1.Highlight 2-4 important words or phrases using markdown bold format.
-              2.Ensure at least one sentence in each category contains highlighted words.
-              3.Do not highlight the main topic itself.
-              4.Choose highlights that are key concepts, important terms, or significant details related to the sentence and main topic.
-              5.Prioritize highlighting words that are separate words or phrases, rather than parts of a larger word or phrase.
-              6.Ensure the information is accurate and relevant to the main topic, avoiding any speculative or unsupported details.
+              content: `Here is my topic - ${searchQuery}. Generate a broad, general summary of the given topic using the 5W1H framework. Use the provided context as background information along with information available to you, but focus on creating a summary that applies to the topic in general rather than specific instances or examples from the context. For each category (What/Who, Why, When, Where, and How), provide 2 to 4 full-fledged and grammatically correct sentences as elements in an array. Use simple, concise language with minimal jargon to make it easily understandable. In each category:
+              1.Ensure the information is accurate and relevant to the main topic, avoiding any speculative or unsupported details.
+              2.Highlight 2-4 important words or phrases using markdown bold format.
+              3.Choose highlights that are key concepts, important terms, or significant details related to the category and main topic.
+              4.At least one sentence in each category must contain highlighted words.
+              5.Do not highlight the main topic itself.
               Present the final result in JSON format with these keys: whatorwho, why, when, where, how, and amazingfacts. Include 3 general amazing facts about the main topic in the amazingfacts array if such information is available. Focus on providing a broad, generally applicable summary of the main topic, avoiding overly specific details or examples from the provided context. The goal is to create a summary that would be informative and relevant even without the specific context provided. If you lack sufficient credible information about the topic, return only an empty object.`,
             },
             {
