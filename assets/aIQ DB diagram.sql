@@ -83,7 +83,11 @@ ALTER TABLE "snippet_likes" ADD FOREIGN KEY ("snippet_id") REFERENCES "snippets"
 
 ALTER TABLE "snippet_likes" ADD FOREIGN KEY ("liked_by") REFERENCES "users" ("xata_id");
 
+ALTER TABLE "snippet_likes" ADD CONSTRAINT "unique_liked_by_snippet_id" UNIQUE (liked_by, snippet_id);
+
 ALTER TABLE "snippet_saves" ADD FOREIGN KEY ("snippet_id") REFERENCES "snippets" ("xata_id");
+
+ALTER TABLE "snippet_saves" ADD CONSTRAINT "unique_saved_by_snippet_id" UNIQUE (saved_by, snippet_id);
 
 ALTER TABLE "snippet_saves" ADD FOREIGN KEY ("saved_by") REFERENCES "users" ("xata_id");
 
@@ -91,6 +95,6 @@ ALTER TABLE "snippet_notes" ADD FOREIGN KEY ("snippet_id") REFERENCES "snippets"
 
 ALTER TABLE "snippet_notes" ADD FOREIGN KEY ("noted_by") REFERENCES "users" ("xata_id");
 
-
 -- NOTE: Dropping foreign key constraints to user table for now since no logic has been written to populate
 -- user table from clerk for now
+

@@ -9,6 +9,7 @@ import CSnippet from "@/components/CSnippet";
 const Home = async () => {
   const { userId }: { userId: string | null } = auth();
   const aIQDetails = {
+    id: "1",
     title: "aIQ",
     whatOrWho: [
       "**aIQ (AI + IQ)** is an AI-powered ed-tech social media platform that generates and presents bite-sized, comprehensive content on user-requested topics.",
@@ -33,6 +34,7 @@ const Home = async () => {
       "Users interact with the platform by inputting topics of interest and swiping through AI-generated snippets.",
     ],
     amazingFacts: [],
+    showLikeSaveAndNotes: false
   };
 
   if (userId) {
@@ -78,6 +80,7 @@ const Home = async () => {
         {/* Second grid (only snippet) */}
         <div className="w-full lg:w-[50%] 2xl:w-full">
           <CSnippet
+            snippetId={aIQDetails.id}
             title={aIQDetails.title}
             requestedOn={null}
             requestorName={null}
@@ -88,6 +91,7 @@ const Home = async () => {
             how={aIQDetails.how}
             amazingFacts={aIQDetails.amazingFacts}
             references={[]}
+            showLikeSaveAndNotes={aIQDetails.showLikeSaveAndNotes}
           />
         </div>
       </div>
