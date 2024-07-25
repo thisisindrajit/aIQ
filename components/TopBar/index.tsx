@@ -7,6 +7,7 @@ import CNotificationHolder from "../holders/CNotificationHolder";
 import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 import CTopBarHolder from "./CTopBarHolder";
+import Link from "next/link";
 
 const TopBar: FC = async () => {
   const user = await currentUser();
@@ -31,7 +32,14 @@ const TopBar: FC = async () => {
   return (
     <CTopBarHolder>
       {/* Logo */}
-      <div className="flex items-center justify-center space-x-3 h-8">
+      <Link
+        href={
+          user
+            ? `${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`
+            : `${process.env.NEXT_PUBLIC_BASE_URL}`
+        }
+        className="flex items-center justify-center space-x-3 h-8"
+      >
         <Image src="/logo.svg" alt="aIQ Logo" width={28} height={28} />
         <Separator orientation="vertical" className="h-6 bg-black" />
         <div className="font-light underline-offset-2 text-base sm:text-lg">
@@ -40,7 +48,7 @@ const TopBar: FC = async () => {
             <span className="underline">I</span>Q
           </span>
         </div>
-      </div>
+      </Link>
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
         <div className="flex items-center justify-center gap-4">

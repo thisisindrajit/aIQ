@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, Fragment, useEffect } from "react";
-import CSnippet from "./CSnippet";
+import CSnippet from "../CSnippet";
 import { Prisma } from "@prisma/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
@@ -10,6 +10,9 @@ import { lowercaseKeys } from "@/utilities/commonUtilities";
 type TSnippets = Prisma.snippetsGetPayload<{
   include: {
     snippet_type_and_data_mapping: true;
+    snippet_likes: true;
+    snippet_notes: true;
+    snippet_saves: true;
   };
   skip?: number;
   take: number;
@@ -34,7 +37,7 @@ const CSnippetsHolder: FC<{
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
         lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
-      refetchInterval: 30000,
+      refetchInterval: 20000,
     });
 
   useEffect(() => {
@@ -76,18 +79,23 @@ const CSnippetsHolder: FC<{
                       )[0]?.references ?? {}
                     )
                   )
-                )
+                );
 
                 return (
                   <CSnippet
                     key={snippet.xata_id}
+                    snippetId={snippet.xata_id}
                     generatedByAi={snippet.generated_by_ai || false}
                     title={snippet.snippet_title}
                     requestorName={snippet.requestor_name}
                     requestedOn={snippet.xata_createdat}
                     whatOrWho={
-                      snippet5w1hData["whatorwho"]?.length > 0 || snippet5w1hData["what"]?.length > 0 || snippet5w1hData["who"]?.length > 0
-                        ? snippet5w1hData["whatorwho"] ?? snippet5w1hData["what"] ?? snippet5w1hData["who"]
+                      snippet5w1hData["whatorwho"]?.length > 0 ||
+                      snippet5w1hData["what"]?.length > 0 ||
+                      snippet5w1hData["who"]?.length > 0
+                        ? snippet5w1hData["whatorwho"] ??
+                          snippet5w1hData["what"] ??
+                          snippet5w1hData["who"]
                         : []
                     }
                     why={
@@ -115,7 +123,14 @@ const CSnippetsHolder: FC<{
                         ? snippet5w1hData["amazingfacts"]
                         : []
                     }
-                    references={references.references?.length > 0 ? references.references : []}
+                    references={
+                      references.references?.length > 0
+                        ? references.references
+                        : []
+                    }
+                    isLikedByUser={snippet.snippet_likes.length > 0}
+                    isSavedByUser={snippet.snippet_saves.length > 0}
+                    note={snippet.snippet_notes.length > 0 ? snippet.snippet_notes[0].note : ""}
                   />
                 );
               })}

@@ -1,16 +1,18 @@
-import TopBar from "@/components/TopBar"
+import TopBar from "@/components/TopBar";
 import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
-import { TrendingUp } from "lucide-react";
+import { Bookmark, NotepadText, TrendingUp } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import CSnippetsHolder from "@/components/CSnippetsHolder";
+import CSnippetsHolder from "@/components/holders/CSnippetsHolder";
 import { prisma } from "@/prisma/client";
 
 const Dashboard = async () => {
   const user = await currentUser();
-  const numberOfSnippetsToTake = Number(process.env.NEXT_PUBLIC_NO_OF_SNIPPETS_TO_TAKE ?? 10);
+  const numberOfSnippetsToTake = Number(
+    process.env.NEXT_PUBLIC_NO_OF_SNIPPETS_TO_TAKE ?? 10
+  );
 
   if (!user) {
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}`);
@@ -21,14 +23,24 @@ const Dashboard = async () => {
 
     if (lastSnippetId === "0") {
       return await prisma.snippets.findMany({
-        include: { snippet_type_and_data_mapping: true },
+        include: {
+          snippet_type_and_data_mapping: true,
+          snippet_likes: true,
+          snippet_notes: true,
+          snippet_saves: true,
+        },
         take: numberOfSnippetsToTake,
         orderBy: { xata_createdat: "desc" },
       });
     }
 
     return await prisma.snippets.findMany({
-      include: { snippet_type_and_data_mapping: true },
+      include: {
+        snippet_type_and_data_mapping: true,
+        snippet_likes: true,
+        snippet_notes: true,
+        snippet_saves: true,
+      },
       take: numberOfSnippetsToTake,
       skip: 1,
       cursor: { xata_id: lastSnippetId },
@@ -61,10 +73,18 @@ const Dashboard = async () => {
       />
       <div className="flex gap-4 w-full 2xl:w-[90%] mx-auto">
         {/* Sidebar */}
-        <div className="hidden xl:flex flex-col bg-primary/10 min-w-[16rem] sticky p-3 h-80 top-20 rounded-lg gap-1.5 border border-primary my-3.5">
+        <div className="hidden xl:flex flex-col min-w-[16rem] sticky p-3 h-80 top-20 rounded-lg gap-1.5 my-3.5 border border-primary">
           <div className="bg-primary/75 text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
             <span>Trending snippets</span>
             <TrendingUp className="h-4 w-4" />
+          </div>
+          <div className="bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
+            <Bookmark className="h-4 w-4" />
+            <span>Saved snippets</span>
+          </div>
+          <div className="bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
+            <NotepadText className="h-4 w-4" />
+            <span>My notes</span>
           </div>
         </div>
         {/* Main content */}

@@ -32,7 +32,7 @@ type TUserNotification = Prisma.user_notificationsGetPayload<{
 const CNotificationHolder: FC<{
   getNotificationsForUser: () => Promise<TUserNotification[]>;
 }> = ({ getNotificationsForUser }) => {
-  const DELAY_IN_SECONDS = 30;
+  const DELAY_IN_SECONDS = 20;
   const [notifications, setNotifications] = useState<TUserNotification[]>([]);
   const [notificationBadgeCount, setNotificationBadgeCount] =
     useState<number>(0);

@@ -18,7 +18,12 @@ const Snippet: FC<{
   }
 
   const snippet = await prisma.snippets.findUnique({
-    include: { snippet_type_and_data_mapping: true },
+    include: {
+      snippet_type_and_data_mapping: true,
+      snippet_likes: true,
+      snippet_notes: true,
+      snippet_saves: true,
+    },
     where: {
       xata_id: snippetId,
     },
@@ -63,6 +68,7 @@ const Snippet: FC<{
         </Link>
         <CSnippet
           key={snippet.xata_id}
+          snippetId={snippet.xata_id}
           generatedByAi={snippet.generated_by_ai || false}
           title={snippet.snippet_title}
           requestorName={snippet.requestor_name}
@@ -87,6 +93,13 @@ const Snippet: FC<{
           }
           references={
             references.references?.length > 0 ? references.references : []
+          }
+          isLikedByUser={snippet.snippet_likes.length > 0}
+          isSavedByUser={snippet.snippet_saves.length > 0}
+          note={
+            snippet.snippet_notes.length > 0
+              ? snippet.snippet_notes[0].note
+              : ""
           }
         />
       </div>
