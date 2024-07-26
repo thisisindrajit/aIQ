@@ -3,6 +3,7 @@ import TopBar from "@/components/TopBar";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/prisma/client";
 import { lowercaseKeys } from "@/utilities/commonUtilities";
+import { currentUser } from "@clerk/nextjs/server";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -11,18 +12,37 @@ import { FC } from "react";
 const Snippet: FC<{
   params: { snippetId: string };
 }> = async ({ params }) => {
+  const user = await currentUser();
   const { snippetId } = params;
 
-  if (!snippetId) {
+  if (!snippetId || !user) {
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
   const snippet = await prisma.snippets.findUnique({
     include: {
       snippet_type_and_data_mapping: true,
-      snippet_likes: true,
-      snippet_notes: true,
-      snippet_saves: true,
+      snippet_likes: {
+        where: {
+          liked_by: {
+            equals: user.id,
+          },
+        },
+      },
+      snippet_notes: {
+        where: {
+          noted_by: {
+            equals: user.id,
+          },
+        },
+      },
+      snippet_saves: {
+        where: {
+          saved_by: {
+            equals: user.id,
+          },
+        },
+      },
     },
     where: {
       xata_id: snippetId,

@@ -14,11 +14,11 @@
 
 - [X] Add column references and storing results from serper API in this column (High priority)
 
-- [ ] Add like logic (Medium priority)
+- [X] Add like logic (High priority)
   
-- [ ] Add save logic (High priority)
+- [X] Add save logic (High priority)
 
-- [ ] Add notes logic (Just plain text is enough for now) [Make it to markdown if possible] (High priority)
+- [X] Add notes logic (Just plain text is enough for now) [Make it to markdown if possible] (High priority)
 
 ---
 

@@ -82,7 +82,7 @@ const CNotesHolder: FC<{
           onChange={(e) => {
             setCurrentNote(e.target.value);
           }}
-          className="h-full resize-none"
+          className="h-full text-sm md:text-base resize-none"
         />
         <Button
           disabled={isSavingNote}

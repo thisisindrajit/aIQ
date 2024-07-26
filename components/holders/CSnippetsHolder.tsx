@@ -10,9 +10,27 @@ import { lowercaseKeys } from "@/utilities/commonUtilities";
 type TSnippets = Prisma.snippetsGetPayload<{
   include: {
     snippet_type_and_data_mapping: true;
-    snippet_likes: true;
-    snippet_notes: true;
-    snippet_saves: true;
+    snippet_likes: {
+      where: {
+        liked_by: {
+          equals: string;
+        };
+      };
+    };
+    snippet_notes: {
+      where: {
+        noted_by: {
+          equals: string;
+        };
+      };
+    };
+    snippet_saves: {
+      where: {
+        saved_by: {
+          equals: string;
+        };
+      };
+    };
   };
   skip?: number;
   take: number;
@@ -130,7 +148,11 @@ const CSnippetsHolder: FC<{
                     }
                     isLikedByUser={snippet.snippet_likes.length > 0}
                     isSavedByUser={snippet.snippet_saves.length > 0}
-                    note={snippet.snippet_notes.length > 0 ? snippet.snippet_notes[0].note : ""}
+                    note={
+                      snippet.snippet_notes.length > 0
+                        ? snippet.snippet_notes[0].note
+                        : ""
+                    }
                   />
                 );
               })}
