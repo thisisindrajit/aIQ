@@ -1,12 +1,14 @@
 import TopBar from "@/components/TopBar";
 import { inngest } from "@/inngest";
 import CSearchBar from "@/components/CSearchBar";
-import { Bookmark, NotepadText, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import CSnippetsHolder from "@/components/holders/CSnippetsHolder";
 import { prisma } from "@/prisma/client";
+import SideBar from "@/components/Sidebar";
+import Tabs from "@/components/Tabs";
 
 const Dashboard = async () => {
   const user = await currentUser();
@@ -25,9 +27,27 @@ const Dashboard = async () => {
       return await prisma.snippets.findMany({
         include: {
           snippet_type_and_data_mapping: true,
-          snippet_likes: true,
-          snippet_notes: true,
-          snippet_saves: true,
+          snippet_likes: {
+            where: {
+              liked_by: {
+                equals: user.id,
+              },
+            },
+          },
+          snippet_notes: {
+            where: {
+              noted_by: {
+                equals: user.id,
+              },
+            },
+          },
+          snippet_saves: {
+            where: {
+              saved_by: {
+                equals: user.id,
+              },
+            },
+          },
         },
         take: numberOfSnippetsToTake,
         orderBy: { xata_createdat: "desc" },
@@ -37,9 +57,27 @@ const Dashboard = async () => {
     return await prisma.snippets.findMany({
       include: {
         snippet_type_and_data_mapping: true,
-        snippet_likes: true,
-        snippet_notes: true,
-        snippet_saves: true,
+        snippet_likes: {
+          where: {
+            liked_by: {
+              equals: user.id,
+            },
+          },
+        },
+        snippet_notes: {
+          where: {
+            noted_by: {
+              equals: user.id,
+            },
+          },
+        },
+        snippet_saves: {
+          where: {
+            saved_by: {
+              equals: user.id,
+            },
+          },
+        },
       },
       take: numberOfSnippetsToTake,
       skip: 1,
@@ -64,29 +102,18 @@ const Dashboard = async () => {
   };
 
   return (
-    <div className="flex flex-col gap-12 min-h-screen p-4 lg:p-6">
+    <div className="flex flex-col gap-12 p-4 lg:p-6">
       <TopBar />
       <CSearchBar
         inngestContentGenerationFunctionCaller={
           inngestContentGenerationFunctionCaller
         }
       />
+      {/* Tabs (will be shown in smaller screens) */}
+      <Tabs active={1} />
       <div className="flex gap-4 w-full 2xl:w-[90%] mx-auto">
-        {/* Sidebar */}
-        <div className="hidden xl:flex flex-col min-w-[16rem] sticky p-3 h-80 top-20 rounded-lg gap-1.5 my-3.5 border border-primary">
-          <div className="bg-primary/75 text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
-            <span>Trending snippets</span>
-            <TrendingUp className="h-4 w-4" />
-          </div>
-          <div className="bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
-            <Bookmark className="h-4 w-4" />
-            <span>Saved snippets</span>
-          </div>
-          <div className="bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all">
-            <NotepadText className="h-4 w-4" />
-            <span>My notes</span>
-          </div>
-        </div>
+        {/* Sidebar (will be shown in larger screens) */}
+        <SideBar active={1} />
         {/* Main content */}
         <div className="w-full flex flex-col gap-4">
           <div className="flex flex-col gap-2">
