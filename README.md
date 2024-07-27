@@ -122,6 +122,8 @@ The SQL code to create all these tables and relations in Xata are available here
 
 - Usage of TypeScript makes the code robust and almost free of errors.
 
+- aIQ is SEO-friendly and performs amazingly well in Lighthouse stats.
+
 - Linter was utilized to ensure the absence of any errors in the codebase.
 
 - Vercel speed insights and analytics packages have been added to track site performance and analytics.
