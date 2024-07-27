@@ -4,7 +4,7 @@ import TopBar from "@/components/TopBar";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import CSnippet from "@/components/CSnippet";
+import CSnippet from "@/components/common/CSnippet";
 
 const Home = async () => {
   const { userId }: { userId: string | null } = auth();
@@ -18,7 +18,7 @@ const Home = async () => {
     ],
     when: [
       "aIQ is used when **quick, reliable information is needed on a topic**, making it ideal for study sessions, research, or moments of curiosity.",
-      "It serves as a **supplementary tool for formal education** and can replace idle time typically spent on social media.",
+      "It serves as a supplementary tool for formal education and can **replace idle time typically spent on social media.**",
       "The first prototype is being **developed as part of the Hashnode AiForTomorrow hackathon**, with future development planned to expand its features and capabilities.",
     ],
     where: [
@@ -34,7 +34,7 @@ const Home = async () => {
       "Users interact with the platform by **inputting topics of interest and swiping through AI-generated snippets.**",
     ],
     amazingFacts: [],
-    showLikeSaveAndNotes: false
+    showLikeSaveAndNotes: false,
   };
 
   if (userId) {
@@ -96,8 +96,8 @@ const Home = async () => {
         </div>
       </div>
       {/* Footer */}
-      <div>
-        Created with ❤️ by{" "}
+      <div className="text-sm sm:text-base">
+        Created by{" "}
         <a
           className="text-primary underline underline-offset-2 font-medium"
           href="https://thisisindrajit.github.io/portfolio"
@@ -105,6 +105,15 @@ const Home = async () => {
           rel="noopener noreferrer"
         >
           Indrajit
+        </a>{" "}
+        for the{" "}
+        <a
+          className="text-primary underline underline-offset-2 font-medium"
+          href="https://hashnode.com/hackathons/ai-for-tomorrow"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Hashnode hackathon
         </a>
       </div>
     </div>

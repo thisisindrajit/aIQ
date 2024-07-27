@@ -93,6 +93,8 @@ ALTER TABLE "snippet_saves" ADD FOREIGN KEY ("saved_by") REFERENCES "users" ("xa
 
 ALTER TABLE "snippet_notes" ADD FOREIGN KEY ("snippet_id") REFERENCES "snippets" ("xata_id");
 
+ALTER TABLE "snippet_notes" ADD CONSTRAINT "unique_noted_by_snippet_id" UNIQUE (noted_by, snippet_id);
+
 ALTER TABLE "snippet_notes" ADD FOREIGN KEY ("noted_by") REFERENCES "users" ("xata_id");
 
 -- NOTE: Dropping foreign key constraints to user table for now since no logic has been written to populate

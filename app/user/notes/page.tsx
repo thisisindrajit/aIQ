@@ -1,9 +1,5 @@
-import CSearchBar from "@/components/CSearchBar";
-import SideBar from "@/components/Sidebar";
-import Tabs from "@/components/Tabs";
-import TopBar from "@/components/TopBar";
-import { Separator } from "@/components/ui/separator";
-import { inngest } from "@/inngest";
+import CNotesHolder from "@/components/holders/CNotesHolder";
+import { prisma } from "@/prisma/client";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -14,48 +10,41 @@ const Notes = async () => {
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
-  const inngestContentGenerationFunctionCaller = async (
-    searchQuery: string,
-    userId?: string | null
-  ) => {
+  const getNotes = async (lastNoteId: string) => {
     "use server";
 
-    await inngest.send({
-      name: "app/generate.snippet",
-      data: {
-        searchQuery: searchQuery,
-        userId: userId,
+    if (lastNoteId === "0") {
+      return await prisma.snippet_notes.findMany({
+        include: {
+          snippets: true,
+        },
+        where: {
+          noted_by: user.id,
+        },
+        orderBy: {
+          xata_createdat: "desc",
+        },
+        take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
+      });
+    }
+
+    return await prisma.snippet_notes.findMany({
+      include: {
+        snippets: true,
       },
+      where: {
+        noted_by: user.id,
+      },
+      orderBy: {
+        xata_createdat: "desc",
+      },
+      take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
+      skip: 1,
+      cursor: { xata_id: lastNoteId },
     });
   };
 
-  return (
-    <div className="flex flex-col gap-12 p-4 lg:p-6">
-      <TopBar />
-      <CSearchBar
-        inngestContentGenerationFunctionCaller={
-          inngestContentGenerationFunctionCaller
-        }
-      />
-      {/* Tabs (will be shown in smaller screens) */}
-      <Tabs active={3} />
-      <div className="flex gap-4 w-full 2xl:w-[90%] mx-auto">
-        {/* Sidebar (will be shown in larger screens) */}
-        <SideBar active={3} />
-        {/* Main content */}
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="text-xl/loose sm:text-2xl/loose text-primary">
-              <span className="font-medium italic">{`${user.firstName}'s`}</span>{" "}
-              notes 📝
-            </div>
-            <Separator className="block xl:hidden" />
-          </div>
-          Notes go here...
-        </div>
-      </div>
-    </div>
-  );
+  return <CNotesHolder getNotes={getNotes} />;
 };
 
 export default Notes;

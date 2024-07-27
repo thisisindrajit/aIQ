@@ -9,6 +9,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
+  manifest: "/manifest.json", 
   title: "aIQ",
   description:
     "aIQ - Where artificial intelligence meets intellectual curiosity.",

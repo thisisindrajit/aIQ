@@ -8,7 +8,7 @@ import { useInView } from "react-intersection-observer";
 import { lowercaseKeys } from "@/utilities/commonUtilities";
 import { useAuth } from "@clerk/nextjs";
 
-type TSnippets = Prisma.snippetsGetPayload<{
+type TSavedSnippets = Prisma.snippetsGetPayload<{
   include: {
     snippet_type_and_data_mapping: {
       include: {
@@ -35,6 +35,16 @@ type TSnippets = Prisma.snippetsGetPayload<{
           equals: string;
         };
       };
+      orderBy: {
+        xata_createdat: "desc",
+      };
+    };
+  };
+  where: {
+    snippet_saves: {
+      some: {
+        saved_by: string;
+      };
     };
   };
   skip?: number;
@@ -42,22 +52,19 @@ type TSnippets = Prisma.snippetsGetPayload<{
   cursor?: {
     xata_id: string;
   };
-  orderBy: {
-    xata_createdat: "desc";
-  };
 }>;
 
-const CSnippetsHolder: FC<{
-  getSnippets: (lastSnippetId: string) => Promise<TSnippets[]>;
-}> = ({ getSnippets }) => {
+const CSavedSnippetsHolder: FC<{
+  getSavedSnippets: (lastSnippetId: string) => Promise<TSavedSnippets[]>;
+}> = ({ getSavedSnippets }) => {
   const { userId } = useAuth();
   const { ref, inView } = useInView();
 
   const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["trending-snippets", userId],
-      queryFn: async ({ pageParam }): Promise<TSnippets[]> =>
-        await getSnippets(pageParam),
+      queryKey: ["user-saved-snippets", userId],
+      queryFn: async ({ pageParam }): Promise<TSavedSnippets[]> =>
+        await getSavedSnippets(pageParam),
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
         lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
@@ -74,17 +81,15 @@ const CSnippetsHolder: FC<{
   return (
     <Fragment>
       {status === "pending" ? (
-        <div className="w-full text-center my-2">
-          Loading trending snippets ✨
-        </div>
+        <div className="w-full text-center my-2">Loading saved snippets ✨</div>
       ) : status === "error" ? (
         <div className="w-full text-destructive text-center my-2">
-          Some error occurred while fetching trending snippets!
+          Some error occurred while fetching saved snippets!
         </div>
       ) : (
         <div className="flex flex-col gap-6">
           {data.pages[0].length === 0 ? (
-            <div className="w-full text-center my-2">No snippets to show 😭</div>
+            <div className="w-full text-center my-2">No saved snippets 😭</div>
           ) : (
             <Fragment>
               {data.pages.map((page, index) => (
@@ -123,6 +128,7 @@ const CSnippetsHolder: FC<{
                         title={snippet.snippet_title}
                         requestorName={snippet.requestor_name}
                         requestedOn={snippet.xata_createdat}
+                        savedOn={snippet.snippet_saves[0].xata_createdat}
                         whatOrWho={
                           snippet5w1hData["whatorwho"]?.length > 0 ||
                           snippet5w1hData["what"]?.length > 0 ||
@@ -185,7 +191,7 @@ const CSnippetsHolder: FC<{
                     Load more snippets
                   </div>
                 ) : (
-                  status === "success" && "All snippets viewed! 🎉"
+                  status === "success" && "All saved snippets viewed! 🎉"
                 )}
               </div>
             </Fragment>
@@ -196,4 +202,4 @@ const CSnippetsHolder: FC<{
   );
 };
 
-export default CSnippetsHolder;
+export default CSavedSnippetsHolder;
