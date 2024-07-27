@@ -66,6 +66,8 @@ _**Current features:**_
 
 - **Notes Feature:** Easily jot down notes for any snippet you find intriguing.
 
+<br>
+
 _**Upcoming Features:**_
 
 - **Search Functionality:** Quickly find specific snippets with direct search.
