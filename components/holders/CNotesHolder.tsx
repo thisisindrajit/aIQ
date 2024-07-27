@@ -1,97 +1,103 @@
 "use client";
 
-import { NotepadText } from "lucide-react";
-import { FC, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
+import { FC, Fragment, useEffect } from "react";
+import { Prisma } from "@prisma/client";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
 import { useAuth } from "@clerk/nextjs";
+import Note from "../note/Note";
+
+type TNotes = Prisma.snippet_notesGetPayload<{
+  include: {
+    snippets: true;
+  };
+  where: {
+    noted_by: string;
+  };
+  orderBy: {
+    xata_createdat: "desc";
+  };
+  skip?: number;
+  take: number;
+  cursor?: {
+    xata_id: string;
+  };
+}>;
 
 const CNotesHolder: FC<{
-  snippetId: string;
-  snippetTitle: string;
-  note: string;
-}> = ({ snippetId, snippetTitle, note }) => {
+  getNotes: (lastNoteId: string) => Promise<TNotes[]>;
+}> = ({ getNotes }) => {
   const { userId } = useAuth();
-  const [prevNote, setPrevNote] = useState(note);
-  const [currentNote, setCurrentNote] = useState(note);
-  const [isSavingNote, setIsSavingNote] = useState(false);
+  const { ref, inView } = useInView();
 
-  const handleSaveNote = async () => {
-    const prevNoteTrimmed = prevNote.trim();
-    const updatedNoteTrimmed = currentNote.trim();
+  const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useInfiniteQuery({
+      queryKey: ["user-notes", userId],
+      queryFn: async ({ pageParam }): Promise<TNotes[]> =>
+        await getNotes(pageParam),
+      initialPageParam: "0",
+      getNextPageParam: (lastPage) =>
+        lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
+      refetchInterval:
+        Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000,
+    });
 
-    setIsSavingNote(true);
-
-    if (prevNoteTrimmed === updatedNoteTrimmed) {
-      toast.info("Note is same as before! 😅");
-      setIsSavingNote(false);
-      return;
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
     }
-
-
-    const saveNoteApi = await fetch(
-      `/api/user/${userId}/snippet/${snippetId}/note`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          note: updatedNoteTrimmed,
-        }),
-      }
-    );
-
-    if (saveNoteApi.ok) {
-      toast.success(`Note saved successfully! ❤️`);
-      setPrevNote(updatedNoteTrimmed);
-    } else {
-      toast.error("Failed to save note 😢");
-    }
-
-    setIsSavingNote(false);
-  };
+  }, [fetchNextPage, inView]);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="border border-primary text-primary p-2 h-full aspect-square flex items-center justify-center rounded-md cursor-pointer">
-          <NotepadText className="h-4 w-4 sm:h-5 sm:w-5" />
+    <Fragment>
+      {status === "pending" ? (
+        <div className="w-full text-center my-2">Loading notes ✨</div>
+      ) : status === "error" ? (
+        <div className="w-full text-destructive text-center my-2">
+          Some error occurred while fetching notes!
         </div>
-      </DialogTrigger>
-      <DialogContent
-        className="h-[80%] sm:max-w-[75%] sm:max-h-[80%] overflow-auto flex flex-col justify-between gap-4 rounded-md"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
-        <DialogHeader>
-          <DialogTitle>Notes for {snippetTitle}</DialogTitle>
-          <DialogDescription>
-            Take notes for this snippet and refer them later. Make sure to save
-            your notes 😁
-          </DialogDescription>
-        </DialogHeader>
-        <Textarea
-          placeholder="Type your notes here..."
-          value={currentNote}
-          onChange={(e) => {
-            setCurrentNote(e.target.value);
-          }}
-          className="h-full text-sm md:text-base resize-none"
-        />
-        <Button
-          disabled={isSavingNote}
-          onClick={isSavingNote ? () => {} : handleSaveNote}
-        >
-          {isSavingNote ? "Saving note..." : "Save note"}
-        </Button>
-      </DialogContent>
-    </Dialog>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {data.pages[0].length === 0 ? (
+            <div className="w-full text-center my-2">No notes 😭</div>
+          ) : (
+            <Fragment>
+              {data.pages.map((page, index) => (
+                <Fragment key={index}>
+                  {page.map((note) => {
+                    if (note.note.length > 0) {
+                      return (
+                        <Note
+                          key={note.xata_id}
+                          note={note.note}
+                          snippetId={note.snippets?.xata_id!}
+                          title={note.snippets?.snippet_title!}
+                          lastNotedOn={note.xata_updatedat}
+                        />
+                      );
+                    }
+                  })}
+                </Fragment>
+              ))}
+              <div ref={ref} className="w-full text-center my-2">
+                {isFetchingNextPage ? (
+                  `Loading more notes ✨`
+                ) : hasNextPage ? (
+                  <div
+                    className="underline cursor-pointer"
+                    onClick={() => fetchNextPage()}
+                  >
+                    Load more notes
+                  </div>
+                ) : (
+                  status === "success" && "All notes viewed! 🎉"
+                )}
+              </div>
+            </Fragment>
+          )}
+        </div>
+      )}
+    </Fragment>
   );
 };
 

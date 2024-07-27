@@ -18,10 +18,12 @@
   
 - [X] Add save logic (High priority)
 
-- [X] Add notes logic (Just plain text is enough for now) [Make it to markdown if possible] (High priority)
+- [X] Add notes logic (Just plain text is enough for now) (High priority)
 
 ---
 
+- [ ] Convert notes to markdown (Medium priority)
+  
 - [ ] Add search logic (use Xata search feature) (Medium priority)
 
 - [ ] Add rewards logic (Daily XP, first snippet generation, first save, first note rewards) (Medium priority)

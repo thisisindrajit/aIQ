@@ -8,22 +8,25 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "./ui/carousel";
-import { Card, CardContent } from "./ui/card";
+} from "../ui/carousel";
+import { Card, CardContent } from "../ui/card";
 import Markdown from "react-markdown";
 import { convertToPrettyDateFormatInLocalTimezone } from "@/utilities/commonUtilities";
-import CReferenceHolder from "./holders/CReferenceHolder";
-import { Bookmark, Heart } from "lucide-react";
-import CNotesHolder from "./holders/CNotesHolder";
+import CReferenceHolder from "../holders/CReferenceHolder";
+import { Bookmark, CircleArrowRight, Heart, Share } from "lucide-react";
+import NotesDialogHolder from "../holders/NotesDialogHolder";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface ICSnippetProps {
   snippetId: string;
+  showLinkIcon?: boolean;
   generatedByAi?: boolean;
   title: string;
   requestorName: string | null;
   requestedOn: Date | null;
+  savedOn?: Date | null;
   whatOrWho: string[];
   when: string[];
   where: string[];
@@ -34,15 +37,17 @@ interface ICSnippetProps {
   showLikeSaveAndNotes?: boolean;
   isLikedByUser?: boolean;
   isSavedByUser?: boolean;
-  note?: string
+  note?: string;
 }
 
 const CSnippet: FC<ICSnippetProps> = ({
   snippetId,
+  showLinkIcon = false,
   generatedByAi = false,
   title,
   requestorName,
   requestedOn,
+  savedOn,
   whatOrWho,
   when,
   where,
@@ -53,7 +58,7 @@ const CSnippet: FC<ICSnippetProps> = ({
   showLikeSaveAndNotes = true,
   isLikedByUser = false,
   isSavedByUser = false,
-  note = ""
+  note = "",
 }) => {
   const categoryArray = [whatOrWho, when, where, why, how];
 
@@ -123,6 +128,19 @@ const CSnippet: FC<ICSnippetProps> = ({
     setIsSaving(false);
   };
 
+  const copyLinkToClipboard = () => {
+    navigator.clipboard
+      .writeText(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/user/snippet/${snippetId}`
+      )
+      .then(() => {
+        toast.success("Link copied to clipboard! 📋");
+      })
+      .catch(() => {
+        toast.error("Failed to copy link to clipboard 😢");
+      });
+  };
+
   useEffect(() => {
     if (!api) {
       return;
@@ -137,21 +155,38 @@ const CSnippet: FC<ICSnippetProps> = ({
   }, [api]);
 
   return (
-    <div className="border border-accent text-accent-foreground min-h-[24rem] h-fit rounded-lg flex flex-col p-3 sm:p-4 gap-6 lg:gap-8">
+    <div className="border border-neutral-300 shadow-lg text-accent-foreground min-h-[24rem] h-fit rounded-lg flex flex-col p-3 sm:p-4 gap-6 lg:gap-8">
       {/* Title, type and request details */}
       <div className="flex flex-col gap-3">
-        <div className="text-lg/relaxed sm:text-xl/relaxed font-medium underline decoration-dotted underline-offset-8">
-          {title}
-        </div>
-        {requestorName && requestedOn && (
-          <div className="text-xs/loose sm:text-sm/loose text-neutral-500">
-            Requested{" "}
-            <span className="font-semibold uppercase">
-              {convertToPrettyDateFormatInLocalTimezone(requestedOn)}
-            </span>{" "}
-            by <span className="font-semibold italic">{requestorName}</span>
+        <div className="flex gap-2 items-center justify-center w-fit">
+          <div className="text-lg/relaxed sm:text-xl/relaxed font-medium underline decoration-dotted underline-offset-8">
+            {title}
           </div>
-        )}
+          {showLinkIcon && (
+            <Link href={`/user/snippet/${snippetId}`}>
+              <CircleArrowRight className="h-5 w-5 stroke-primary" />
+            </Link>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          {savedOn && (
+            <div className="text-xs/loose sm:text-sm/loose text-secondary">
+              Saved{" "}
+              <span className="font-semibold uppercase">
+                {convertToPrettyDateFormatInLocalTimezone(savedOn)}
+              </span>
+            </div>
+          )}
+          {requestorName && requestedOn && (
+            <div className="text-xs/loose sm:text-sm/loose text-neutral-500">
+              Requested{" "}
+              <span className="font-semibold uppercase">
+                {convertToPrettyDateFormatInLocalTimezone(requestedOn)}
+              </span>{" "}
+              by <span className="font-semibold italic">{requestorName}</span>
+            </div>
+          )}
+        </div>
         <div className="flex gap-2 items-center justify-center w-fit font-medium">
           <div className="text-xs bg-accent text-accent-foreground py-1 px-2 w-fit rounded-lg">
             5W1H {generatedByAi && `(AI generated)`}
@@ -167,7 +202,13 @@ const CSnippet: FC<ICSnippetProps> = ({
           <div className="bg-background text-foreground border border-foreground p-2 rounded-md w-fit text-sm sm:text-base">
             {getCurrentSlideText(current)}
           </div>
-          {showLikeSaveAndNotes && <CNotesHolder snippetId={snippetId} snippetTitle={title} note={note} />}
+          {showLikeSaveAndNotes && (
+            <NotesDialogHolder
+              snippetId={snippetId}
+              snippetTitle={title}
+              note={note}
+            />
+          )}
         </div>
         <Carousel setApi={setApi} opts={{ loop: true }}>
           <CarouselContent>
@@ -220,9 +261,9 @@ const CSnippet: FC<ICSnippetProps> = ({
         </div>
       )}
       {showLikeSaveAndNotes && (
-        <div className="flex items-center w-fit gap-2">
+        <div className="flex items-center w-fit gap-2 h-10 select-none">
           <div
-            className="bg-red-50 flex items-center justify-center gap-1.5 text-sm w-fit text-red-600 px-4 py-3 rounded-md cursor-pointer border border-red-600"
+            className="bg-red-50 flex items-center justify-center gap-1.5 text-sm w-fit text-red-600 p-2.5 sm:px-4 sm:py-3 h-full rounded-md cursor-pointer border border-red-600"
             onClick={isLiking ? () => {} : handleLike}
           >
             {liked ? (
@@ -239,11 +280,11 @@ const CSnippet: FC<ICSnippetProps> = ({
               : "Like"}
           </div>
           <div
-            className="bg-teal-50 flex items-center justify-center gap-1.5 text-sm w-fit text-teal-600 px-4 py-3 rounded-md cursor-pointer border border-teal-600"
+            className="bg-orange-50 flex items-center justify-center gap-1.5 text-sm w-fit text-orange-600 p-2.5 sm:px-4 sm:py-3 h-full rounded-md cursor-pointer border border-orange-600"
             onClick={isSaving ? () => {} : handleSave}
           >
             {saved ? (
-              <Bookmark className="h-4 w-4 fill-teal-600" />
+              <Bookmark className="h-4 w-4 fill-orange-600" />
             ) : (
               <Bookmark className="h-4 w-4" />
             )}
@@ -254,6 +295,12 @@ const CSnippet: FC<ICSnippetProps> = ({
               : saved
               ? "Saved"
               : "Save"}
+          </div>
+          <div
+            className="bg-emerald-50 text-sm w-fit text-emerald-600 rounded-md cursor-pointer border border-emerald-600 p-2.5 sm:p-3 h-full aspect-square flex items-center justify-center"
+            onClick={copyLinkToClipboard}
+          >
+            <Share className="h-4 w-4" />
           </div>
         </div>
       )}

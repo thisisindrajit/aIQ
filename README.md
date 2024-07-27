@@ -1,33 +1,152 @@
-## aIQ - Where artificial intelligence meets intellectual curiosity.
+# aIQ - Where artificial intelligence meets intellectual curiosity.
 
-Here is the [link to aIQ](https://aiq.fyi), if you want to directly explore it 🥳
+### Here is the [blog post](https://blogsbyindrajit.hashnode.dev/introducing-aiq) introducing aIQ!
 
-![image](https://github.com/user-attachments/assets/a7484a14-c480-431d-9178-ef381397287b)
+![image](https://github.com/user-attachments/assets/0d5a612b-69a7-4035-91b6-3cf1d3bc7510)
 
-### About aIQ
+In our rapidly changing digital age, the way we absorb information is shifting dramatically. Traditional learning methods often can't keep pace with the needs of today's learners, who crave quick, digestible content.Many young people find themselves spending hours on social media, often interacting with content that offers little to no educational value.
 
-aIQ is an innovative ed-tech social media platform that combines artificial intelligence with a social media-inspired interface to deliver bite-sized, comprehensive learning experiences. The goal is to make learning engaging, accessible, and enjoyable.
+I personally wanted to address this challenge, and so I created aIQ (AI + IQ) [Pronounced in the same manner as IQ] —a heartfelt, open-source and innovative ed-tech social media platform. aIQ harnesses the power of artificial intelligence to offer engaging, bite-sized learning experiences that are as enjoyable as they are educational. With its AI-generated snippets structured in the 5W1H framework, aIQ makes learning not just accessible, but a delightful journey of discovery.
 
-### Key Features of prototype (version 0)
+<br>
 
-- **AI-Generated Content**: Instantly create educational snippets on any topic.
-- **5W1H Framework**: Structured information presentation for easy understanding.
-- **Infinite Scroll Interface**: Seamless browsing through various topics.
-- More features coming soon!
+### 🔗 Important links
 
-### Technology Stack
+- [Link to aIQ](https://aiq.fyi) (Try it out for yourself! 🥳) 
 
-- Frontend: [NextJS](https://nextjs.org/) with TypeScript
+_NOTE - As this is version 1 of aIQ, you might come across a few bugs or glitches. Please raise an issue in GitHub if you come across any bug and thanks for your patience while I work on fixing them!_
 
-**PXCI stack:**
-- ORM: [Prisma](https://www.prisma.io/)
-- Authentication: [Clerk](https://clerk.com/)
-- [Inngest](https://www.inngest.com/) for reliable and durable background functions
-- Database: [Xata](https://xata.io/)
+- [Link to GitHub repository](https://github.com/thisisindrajit/aIQ)
+
+<br>
+
+### ❓ What is the problem that aIQ is trying to address?
+
+- **Social Media Addiction:** Many young people are spending significant amounts of time on social media platforms, often engaging with content that lacks educational value.
+
+- **Lack of Valuable Information:** The prevalent content on social media is often misleading or highly superficial, not contributing to personal growth or knowledge acquisition.
+
+- **Reduced Critical Thinking:** Constant exposure to non-educational content can lead to a decline in critical thinking and analytical skills.
+
+- **Knowledge Gap:** There's a growing gap in accessible, quality educational content that is both engaging and informative on social media platforms.
+
+<br>
+
+### 🚀 How aIQ can be the solution
+
+- **Educational Social Media:** aIQ transforms the social media experience by offering a platform where users can engage with AI-powered educational snippets.
+
+- **Valuable Knowledge:** Provides content structured in the 5W1H format (Who, What, When, Where, Why, How), making it easy to understand and retain valuable information.
+
+- **Engaging and Informative:** Combines the engaging aspects of social media with informative content, encouraging users to learn while they scroll.
+
+- **Enhanced Critical Thinking:** By exposing users to structured and thoughtful content, aIQ fosters improved critical thinking and knowledge acquisition among its audience.
+
+<br>
+
+### 💡 Why was I motivated to create aIQ
+
+I was inspired to create aIQ because I saw how countless young people, including those close to me and even myself at times, were spending hours on social media without gaining anything meaningful. It saddened me to see potential being wasted on content that neither educates nor enriches lives. I wanted to create a space where people could turn their screen time into a valuable learning experience, where knowledge and growth were just a scroll away. aIQ is my way of offering a meaningful alternative—a place where engaging, bite-sized educational content can empower users to expand their minds and discover new passions. This platform is my hope for a brighter, more informed future for all who use it.
+
+<br>
+
+### ✨ Key features
+
+_**Current features:**_
+
+- **AI-Generated Content:** Instantly create engaging educational snippets on any topic.
+
+- **5W1H Framework:** Information structured for easy understanding—Who, What, When, Where, Why, and How.
+
+- **References:** Transparency with all sources listed for each snippet.
+
+- **Infinite Scroll Interface:** Enjoy seamless browsing through a vast range of topics.
+
+- **Social Features:** Like, save, and share your favorite content.
+
+- **Notes Feature:** Easily jot down notes for any snippet you find intriguing.
+
+_**Upcoming Features:**_
+
+- **Search Functionality:** Quickly find specific snippets with direct search.
+
+- **Daily Rewards & More:** Earn daily XP, receive rewards for generating snippets, and unlock other exciting incentives!
+
+- **Diverse Content Showcase Types:** Explore content formats like ELI5 (Explain Like I am 5), SWOT analysis, and timelines.
+
+- **Follow Users:** Stay updated with content from your favorite contributors.
+
+- **Advanced Generation:** Access content generated by different LLMs and compare results for the best content.
+
+<br>
+
+### 🛠️ Tech stack
+
+- Frontend: NextJS with TypeScript
+
+- shadcn/ui and TailwindCSS for styling
+
+- ORM: Prisma
+
+- Authentication: Clerk
+
+- Inngest - Reliable and durable background function for AI content generation
+
+- Database: Xata
+
+- Tanstack query for network calls
+
+- Serper for getting web search results
+
+- Fireworks AI for embedding model
+
+- Langchain for tasks like vectorization
+
+- Vercel for hosting
+
+<br>
+
+### DB diagram
+
+![image](https://github.com/user-attachments/assets/6f6eb191-10d3-4de5-997b-858a2107662b)
+
+_NOTE - Some tables like rewards are not used for now but created for upcoming features._
+
+The SQL code to create all these tables and relations in Xata are available here. Note that id (Primary key), created_at, updated_at (metadata fields) are not explicitly created for the tables as Xata creates them by default and so I took advantage of it 😁
+
+<br>
+
+### 👌🏻 Best practices
+
+- Usage of TypeScript makes the code robust and almost free of errors.
+
+- Linter was utilized to ensure the absence of any errors in the codebase.
+
+- Vercel speed insights and analytics packages have been added to track site performance and analytics.
+
+- The codebase has been equipped with a Continuous Integration/Continuous Deployment (CI/CD) setup, facilitated by Vercel. The codebase contains two branches - one for production and one for development, and both branches have been set with branch protection rules to minimize the occurrence of undesired errors.
+
+<br>
+
+### aIQ ❤️ open source
+
+aIQ is dedicated to the principles of openness and collaboration, embracing an open-source ethos to foster innovation and community involvement. The platform is not only free and accessible but also transparent, with all LLM prompts and source code available on GitHub. This commitment ensures that anyone can contribute, adapt, and build upon my work. By remaining open source forever, aIQ empowers a global community to continuously enhance and expand the platform, driving progress and keeping the pursuit of knowledge inclusive and dynamic.
+
+<br>
+
+### Conclusion
+
+Creating aIQ has been a deeply personal journey for me, driven by a desire to make learning both accessible and meaningful. I wanted to build something that could transform the way we engage with information, turning hours spent on social media into opportunities for growth and discovery. 
+
+By making aIQ open source and sharing the source code on GitHub, I hope to invite others into this vision—empowering anyone to contribute, adapt, and enhance aIQ. This commitment to openness is my way of ensuring that aIQ remains a collaborative, ever-evolving platform. As I watch this project grow and flourish, I am filled with hope and gratitude, knowing that together we can create a world where knowledge is not just a pursuit, but a shared journey.
+
+<br>
 
 ### Other References
 - [Font - Satoshi](https://www.fontshare.com/fonts/satoshi)
 - [Favicon generator](https://favicon.io/favicon-converter/)
 - [Inngest documentation](https://www.inngest.com/docs)
 
-This prototype has been as part of [Xata summer launch PXCI hackathon](https://xata.io/blog/summer-launch-pxci-hackathon).
+<br>
+
+This prototype has been as part of [Hashnode AiForTomorrow hackathon](https://hashnode.com/hackathons/ai-for-tomorrow?source=ai).

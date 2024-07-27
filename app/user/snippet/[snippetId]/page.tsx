@@ -1,5 +1,4 @@
-import CSnippet from "@/components/CSnippet";
-import TopBar from "@/components/TopBar";
+import CSnippet from "@/components/common/CSnippet";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/prisma/client";
 import { lowercaseKeys } from "@/utilities/commonUtilities";
@@ -21,7 +20,11 @@ const Snippet: FC<{
 
   const snippet = await prisma.snippets.findUnique({
     include: {
-      snippet_type_and_data_mapping: true,
+      snippet_type_and_data_mapping: {
+        include: {
+          list_snippet_types: true
+        }
+      },
       snippet_likes: {
         where: {
           liked_by: {
@@ -57,7 +60,7 @@ const Snippet: FC<{
     JSON.parse(
       JSON.stringify(
         snippet.snippet_type_and_data_mapping.filter(
-          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
+          (x) => x.list_snippet_types?.snippet_type.toLowerCase() === "5w1h"
         )[0].data ?? {}
       )
     )
@@ -67,62 +70,57 @@ const Snippet: FC<{
     JSON.parse(
       JSON.stringify(
         snippet.snippet_type_and_data_mapping.filter(
-          (x: any) => x.type === "rec_cqafk3325jvdoj83gfcg" // TODO: Change this from hardcoded user id to real snippet type by getting the value directly from DB (include the table in the prisma query)
+          (x) => x.list_snippet_types?.snippet_type.toLowerCase() === "5w1h"
         )[0]?.references ?? {}
       )
     )
   );
 
   return (
-    <div className="flex flex-col gap-12 min-h-screen p-4 lg:p-6">
-      <TopBar />
-      <div className="flex flex-col gap-4 w-full 2xl:w-[90%] mx-auto">
-        <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`}>
-          <Button
-            variant="outline"
-            className="flex gap-2 items-center justify-center"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Go to trending snippets
-          </Button>
-        </Link>
-        <CSnippet
-          key={snippet.xata_id}
-          snippetId={snippet.xata_id}
-          generatedByAi={snippet.generated_by_ai || false}
-          title={snippet.snippet_title}
-          requestorName={snippet.requestor_name}
-          requestedOn={snippet.xata_createdat}
-          whatOrWho={
-            snippet5w1hData["whatorwho"]?.length > 0
-              ? snippet5w1hData["whatorwho"]
-              : []
-          }
-          why={snippet5w1hData["why"]?.length > 0 ? snippet5w1hData["why"] : []}
-          when={
-            snippet5w1hData["when"]?.length > 0 ? snippet5w1hData["when"] : []
-          }
-          where={
-            snippet5w1hData["where"]?.length > 0 ? snippet5w1hData["where"] : []
-          }
-          how={snippet5w1hData["how"]?.length > 0 ? snippet5w1hData["how"] : []}
-          amazingFacts={
-            snippet5w1hData["amazingfacts"]?.length > 0
-              ? snippet5w1hData["amazingfacts"]
-              : []
-          }
-          references={
-            references.references?.length > 0 ? references.references : []
-          }
-          isLikedByUser={snippet.snippet_likes.length > 0}
-          isSavedByUser={snippet.snippet_saves.length > 0}
-          note={
-            snippet.snippet_notes.length > 0
-              ? snippet.snippet_notes[0].note
-              : ""
-          }
-        />
-      </div>
+    <div className="flex flex-col gap-4 w-full 2xl:w-[90%] mx-auto">
+      <Link href={`/user/dashboard`}>
+        <Button
+          variant="outline"
+          className="flex gap-2 items-center justify-center"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Go to trending snippets
+        </Button>
+      </Link>
+      <CSnippet
+        key={snippet.xata_id}
+        snippetId={snippet.xata_id}
+        generatedByAi={snippet.generated_by_ai || false}
+        title={snippet.snippet_title}
+        requestorName={snippet.requestor_name}
+        requestedOn={snippet.xata_createdat}
+        whatOrWho={
+          snippet5w1hData["whatorwho"]?.length > 0
+            ? snippet5w1hData["whatorwho"]
+            : []
+        }
+        why={snippet5w1hData["why"]?.length > 0 ? snippet5w1hData["why"] : []}
+        when={
+          snippet5w1hData["when"]?.length > 0 ? snippet5w1hData["when"] : []
+        }
+        where={
+          snippet5w1hData["where"]?.length > 0 ? snippet5w1hData["where"] : []
+        }
+        how={snippet5w1hData["how"]?.length > 0 ? snippet5w1hData["how"] : []}
+        amazingFacts={
+          snippet5w1hData["amazingfacts"]?.length > 0
+            ? snippet5w1hData["amazingfacts"]
+            : []
+        }
+        references={
+          references.references?.length > 0 ? references.references : []
+        }
+        isLikedByUser={snippet.snippet_likes.length > 0}
+        isSavedByUser={snippet.snippet_saves.length > 0}
+        note={
+          snippet.snippet_notes.length > 0 ? snippet.snippet_notes[0].note : ""
+        }
+      />
     </div>
   );
 };

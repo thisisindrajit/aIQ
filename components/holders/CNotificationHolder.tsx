@@ -32,7 +32,6 @@ type TUserNotification = Prisma.user_notificationsGetPayload<{
 const CNotificationHolder: FC<{
   getNotificationsForUser: () => Promise<TUserNotification[]>;
 }> = ({ getNotificationsForUser }) => {
-  const DELAY_IN_SECONDS = 20;
   const [notifications, setNotifications] = useState<TUserNotification[]>([]);
   const [notificationBadgeCount, setNotificationBadgeCount] =
     useState<number>(0);
@@ -71,7 +70,7 @@ const CNotificationHolder: FC<{
 
     const fetchNotificationsTimer = setInterval(() => {
       getLatestNotifications();
-    }, DELAY_IN_SECONDS * 1000);
+    }, Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000);
 
     return () => {
       clearInterval(fetchNotificationsTimer);
@@ -180,7 +179,7 @@ const CNotificationHolder: FC<{
                           </span>
                           . You can view it by clicking{" "}
                           <Link
-                            href={`${process.env.NEXT_PUBLIC_BASE_URL}/${snippetLink}`}
+                            href={`/${snippetLink}`}
                             className="font-semibold underline"
                           >
                             here

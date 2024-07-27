@@ -8,6 +8,13 @@ import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 import CTopBarHolder from "./CTopBarHolder";
 import Link from "next/link";
+import { Award } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const TopBar: FC = async () => {
   const user = await currentUser();
@@ -16,7 +23,7 @@ const TopBar: FC = async () => {
     "use server";
 
     return await prisma.user_notifications.findMany({
-      take: 15,
+      take: 10,
       include: {
         list_notification_types: true,
       },
@@ -33,11 +40,7 @@ const TopBar: FC = async () => {
     <CTopBarHolder>
       {/* Logo */}
       <Link
-        href={
-          user
-            ? `${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`
-            : `${process.env.NEXT_PUBLIC_BASE_URL}`
-        }
+        href={user ? `/user/dashboard` : `/`}
         className="flex items-center justify-center space-x-3 h-8"
       >
         <Image src="/logo.svg" alt="aIQ Logo" width={28} height={28} />
@@ -51,7 +54,17 @@ const TopBar: FC = async () => {
       </Link>
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-3">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="flex gap-1 items-center justify-center text-sm text-amber-500 bg-amber-50 py-1 px-2 rounded-md border border-amber-500 cursor-pointer">
+                  <Award className="h-4 w-4" />0 XP
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Rewards coming soon!</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <CNotificationHolder
             getNotificationsForUser={getNotificationsForUser}
           />

@@ -1,9 +1,5 @@
-import CSearchBar from "@/components/CSearchBar";
-import SideBar from "@/components/Sidebar";
-import Tabs from "@/components/Tabs";
-import TopBar from "@/components/TopBar";
-import { Separator } from "@/components/ui/separator";
-import { inngest } from "@/inngest";
+import CSavedSnippetsHolder from "@/components/holders/CSavedSnippetsHolder";
+import { prisma } from "@/prisma/client";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -14,48 +10,99 @@ const Saved = async () => {
     redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/user/dashboard`);
   }
 
-  const inngestContentGenerationFunctionCaller = async (
-    searchQuery: string,
-    userId?: string | null
-  ) => {
+  const getSavedSnippets = async (lastSnippetId: string) => {
     "use server";
 
-    await inngest.send({
-      name: "app/generate.snippet",
-      data: {
-        searchQuery: searchQuery,
-        userId: userId,
+    if (lastSnippetId === "0") {
+      return await prisma.snippets.findMany({
+        include: {
+          snippet_type_and_data_mapping: {
+            include: {
+              list_snippet_types: true,
+            },
+          },
+          snippet_likes: {
+            where: {
+              liked_by: {
+                equals: user.id,
+              },
+            },
+          },
+          snippet_notes: {
+            where: {
+              noted_by: {
+                equals: user.id,
+              },
+            },
+          },
+          snippet_saves: {
+            where: {
+              saved_by: {
+                equals: user.id,
+              },
+            },
+            orderBy: {
+              xata_createdat: "desc",
+            }
+          },
+        },
+        where: {
+          snippet_saves: {
+            some: {
+              saved_by: user.id,
+            },
+          },
+        },
+        take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
+      });
+    }
+
+    return await prisma.snippets.findMany({
+      include: {
+        snippet_type_and_data_mapping: {
+          include: {
+            list_snippet_types: true,
+          },
+        },
+        snippet_likes: {
+          where: {
+            liked_by: {
+              equals: user.id,
+            },
+          },
+        },
+        snippet_notes: {
+          where: {
+            noted_by: {
+              equals: user.id,
+            },
+          },
+        },
+        snippet_saves: {
+          where: {
+            saved_by: {
+              equals: user.id,
+            },
+          },
+          orderBy: {
+            xata_createdat: "desc",
+          }
+        },
       },
+      where: {
+        snippet_saves: {
+          some: {
+            saved_by: user.id,
+          },
+        },
+      },
+      take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
+      skip: 1,
+      cursor: { xata_id: lastSnippetId },
     });
   };
 
-  return (
-    <div className="flex flex-col gap-12 p-4 lg:p-6">
-      <TopBar />
-      <CSearchBar
-        inngestContentGenerationFunctionCaller={
-          inngestContentGenerationFunctionCaller
-        }
-      />
-      {/* Tabs (will be shown in smaller screens) */}
-      <Tabs active={2} />
-      <div className="flex gap-4 w-full 2xl:w-[90%] mx-auto">
-        {/* Sidebar (will be shown in larger screens) */}
-        <SideBar active={2} />
-        {/* Main content */}
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="text-xl/loose sm:text-2xl/loose text-primary">
-              <span className="font-medium italic">{`${user.firstName}'s`}</span>{" "}
-              saved snippets 💾
-            </div>
-            <Separator className="block xl:hidden" />
-          </div>
-          Saved snippets go here...
-        </div>
-      </div>
-    </div>
-  );
+  return <CSavedSnippetsHolder getSavedSnippets={getSavedSnippets} />;
 };
 
 export default Saved;

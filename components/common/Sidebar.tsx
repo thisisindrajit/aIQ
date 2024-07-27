@@ -8,8 +8,8 @@ const SideBar: FC<{ active: number }> = ({ active }) => {
       <Link href="/user/dashboard"
         className={`${
           active === 1
-            ? "bg-primary/75 text-primary-foreground"
-            : "bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
+            : "bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         } flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all`}
       >
         <span>Trending snippets</span>
@@ -18,8 +18,8 @@ const SideBar: FC<{ active: number }> = ({ active }) => {
       <Link href="/user/saved"
         className={`${
           active === 2
-            ? "bg-primary/75 text-primary-foreground"
-            : "bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
+            : "bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         } flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all`}
       >
         <Bookmark className="h-4 w-4" />
@@ -28,8 +28,8 @@ const SideBar: FC<{ active: number }> = ({ active }) => {
       <Link href="/user/notes"
         className={`${
           active === 3
-            ? "bg-primary/75 text-primary-foreground"
-            : "bg-primary/10 text-primary hover:bg-primary/75 hover:text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
+            : "bg-primary/5 text-primary hover:bg-primary hover:text-primary-foreground"
         } flex gap-2 items-center justify-center p-4 w-full rounded-md cursor-pointer transition-all`}
       >
         <NotepadText className="h-4 w-4" />
