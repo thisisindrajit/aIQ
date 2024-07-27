@@ -149,4 +149,4 @@ By making aIQ open source and sharing the source code on GitHub, I hope to invit
 
 <br>
 
-This prototype has been as part of [Hashnode AiForTomorrow hackathon](https://hashnode.com/hackathons/ai-for-tomorrow?source=ai).
+aIQ has been created for the [Hashnode AiForTomorrow hackathon](https://hashnode.com/hackathons/ai-for-tomorrow?source=ai).
