@@ -63,6 +63,8 @@ const CSnippetsHolder: FC<{
         lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
       refetchInterval:
         Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000,
+      refetchIntervalInBackground: true,
+      refetchOnMount: "always",
     });
 
   useEffect(() => {
@@ -84,7 +86,9 @@ const CSnippetsHolder: FC<{
       ) : (
         <div className="flex flex-col gap-6">
           {data.pages[0].length === 0 ? (
-            <div className="w-full text-center my-2">No snippets to show 😭</div>
+            <div className="w-full text-center my-2">
+              No snippets to show 😭
+            </div>
           ) : (
             <Fragment>
               {data.pages.map((page, index) => (
