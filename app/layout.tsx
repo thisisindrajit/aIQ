@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ReactNode } from "react";
 import CReactQueryProvider from "@/providers/CReactQueryProvider";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/react"
-
-import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/sonner";
 
+import "./globals.css";
+
 export const metadata: Metadata = {
-  manifest: "/manifest.json", 
   title: "aIQ",
   description:
     "aIQ - Where artificial intelligence meets intellectual curiosity.",
@@ -21,12 +20,15 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl="/" appearance={{
-      layout: {
-        logoImageUrl: '/logo.svg',
-        socialButtonsPlacement: 'bottom',
-      }
-    }}>
+    <ClerkProvider
+      afterSignOutUrl="/"
+      appearance={{
+        layout: {
+          logoImageUrl: "/logo.svg",
+          socialButtonsPlacement: "bottom",
+        },
+      }}
+    >
       <html lang="en">
         <head>
           <link
@@ -59,20 +61,20 @@ export default function RootLayout({
         </head>
         <body>
           <CReactQueryProvider>
-            <div className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
-              <Toaster
-                theme="light"
-                richColors={true}
-                expand={true}
-                closeButton={true}
-                toastOptions={{
-                  style: {
-                    fontFamily: `"Satoshi", sans-serif`,
-                  },
-                }}
-              />
-              {children}
-            </div>
+              <div className="m-auto xl:max-w-[1440px] 2xl:max-w-[1920px]">
+                <Toaster
+                  theme="light"
+                  richColors={true}
+                  expand={true}
+                  closeButton={true}
+                  toastOptions={{
+                    style: {
+                      fontFamily: `"Satoshi", sans-serif`,
+                    },
+                  }}
+                />
+                {children}
+              </div>
           </CReactQueryProvider>
           <SpeedInsights />
           <Analytics />

@@ -8,14 +8,13 @@ import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 import CTopBarHolder from "./CTopBarHolder";
 import Link from "next/link";
-import { Award, Download } from "lucide-react";
+import { Award } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import CPwaInstallButton from "../common/CPwaInstallButton";
 
 const TopBar: FC = async () => {
   const user = await currentUser();
@@ -56,9 +55,6 @@ const TopBar: FC = async () => {
       {/* User menu button (if signed in) or SignIn button (if signed out) */}
       <SignedIn>
         <div className="flex items-center justify-center gap-3">
-          <CPwaInstallButton>
-            <div className="bg-primary/10 border border-primary p-1.5 rounded-md text-primary cursor-pointer"><Download className="h-4 w-4" /></div>
-          </CPwaInstallButton>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
