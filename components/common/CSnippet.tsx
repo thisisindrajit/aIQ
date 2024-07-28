@@ -18,6 +18,8 @@ import NotesDialogHolder from "../holders/NotesDialogHolder";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import Link from "next/link";
+import { TSnippet } from "@/types/TSnippet";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ICSnippetProps {
   snippetId: string;
@@ -63,6 +65,13 @@ const CSnippet: FC<ICSnippetProps> = ({
   const categoryArray = [whatOrWho, when, where, why, how];
 
   const { userId } = useAuth();
+  const queryClient = useQueryClient();
+  // getting query data for snippet if exists
+  const snippetDataInQuery: TSnippet | undefined = queryClient.getQueryData([
+    "snippet",
+    snippetId,
+    userId,
+  ]);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(5);
@@ -88,6 +97,13 @@ const CSnippet: FC<ICSnippetProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (snippetDataInQuery) {
+      setLiked(snippetDataInQuery.snippet_likes.length > 0);
+      setSaved(snippetDataInQuery.snippet_saves.length > 0);
+    }
+  }, [snippetDataInQuery]);
+
   const handleLike = async () => {
     setIsLiking(true);
 
@@ -100,6 +116,30 @@ const CSnippet: FC<ICSnippetProps> = ({
 
     if (likeApi.ok) {
       toast.success(`Snippet ${liked ? "disliked" : "liked"} successfully! ❤️`);
+
+      queryClient.setQueryData(
+        ["snippet", snippetId, userId],
+        (oldSnippet: TSnippet) => {
+          if (oldSnippet) {
+            return {
+              ...oldSnippet,
+              snippet_likes: liked
+                ? oldSnippet.snippet_likes.filter(
+                    (like) => like.liked_by !== userId
+                  )
+                : [
+                    ...oldSnippet.snippet_likes,
+                    {
+                      liked_by: userId,
+                      xata_createdat: new Date().toUTCString(),
+                      xata_updatedat: new Date().toUTCString(),
+                    },
+                  ],
+            };
+          }
+        }
+      );
+
       setLiked(!liked);
     } else {
       toast.error("Failed to like snippet 😢");
@@ -112,7 +152,7 @@ const CSnippet: FC<ICSnippetProps> = ({
     setIsSaving(true);
 
     const saveApi = await fetch(
-      `/api/user/${userId}/snippet/${snippetId}/save/${liked ? "0" : "1"}`,
+      `/api/user/${userId}/snippet/${snippetId}/save/${saved ? "0" : "1"}`,
       {
         method: "GET",
       }
@@ -120,7 +160,37 @@ const CSnippet: FC<ICSnippetProps> = ({
 
     if (saveApi.ok) {
       toast.success(`Snippet ${saved ? "unsaved" : "saved"} successfully! ❤️`);
+
+      queryClient.setQueryData(
+        ["snippet", snippetId, userId],
+        (oldSnippet: TSnippet) => {
+          if (oldSnippet) {
+            return {
+              ...oldSnippet,
+              snippet_saves: saved
+                ? oldSnippet.snippet_saves.filter(
+                    (save) => save.saved_by !== userId
+                  )
+                : [
+                    ...oldSnippet.snippet_saves,
+                    {
+                      saved_by: userId,
+                      xata_createdat: new Date().toUTCString(),
+                      xata_updatedat: new Date().toUTCString(),
+                    },
+                  ],
+            };
+          }
+        }
+      );
+
       setSaved(!saved);
+
+      // Refetching user saved snippets after saving/unsaving snippet
+      queryClient.refetchQueries({
+        queryKey: ["user-saved-snippets", userId],
+        exact: true,
+      });
     } else {
       toast.error("Failed to save snippet 😢");
     }
@@ -159,7 +229,7 @@ const CSnippet: FC<ICSnippetProps> = ({
       {/* Title, type and request details */}
       <div className="flex flex-col gap-3">
         <div className="flex gap-2 items-center justify-center w-fit">
-          <div className="text-lg/relaxed sm:text-xl/relaxed font-medium underline decoration-dotted underline-offset-8">
+          <div className="text-lg/relaxed sm:text-xl/relaxed font-medium underline decoration-dotted underline-offset-8 capitalize">
             {title}
           </div>
           {showLinkIcon && (

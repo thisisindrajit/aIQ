@@ -8,7 +8,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/prisma/client";
 import CTopBarHolder from "./CTopBarHolder";
 import Link from "next/link";
-import { Award } from "lucide-react";
+import { Trophy } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -31,7 +31,7 @@ const TopBar: FC = async () => {
         notification_receiver: user?.id,
       },
       orderBy: {
-        xata_createdat: "desc",
+        xata_id: "desc",
       },
     });
   };
@@ -58,8 +58,9 @@ const TopBar: FC = async () => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <div className="flex gap-1 items-center justify-center text-sm text-amber-500 bg-amber-50 py-1 px-2 rounded-md border border-amber-500 cursor-pointer">
-                  <Award className="h-4 w-4" />0 XP
+                <div className="flex gap-1.5 items-center justify-center text-sm text-amber-500 bg-amber-50 py-1 px-2 rounded-md border border-amber-500 cursor-pointer">
+                  <Trophy className="h-4 w-4" />
+                  Soon!
                 </div>
               </TooltipTrigger>
               <TooltipContent>Rewards coming soon!</TooltipContent>

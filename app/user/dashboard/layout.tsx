@@ -52,7 +52,10 @@ const DashboardLayout = async ({
           <div className="flex flex-col gap-2">
             <div className="text-xl/loose sm:text-2xl/loose text-primary">
               Welcome{" "}
-              <span className="font-medium italic">{user.firstName}</span> 🤩
+              {user.firstName && (
+                <span className="font-medium italic">{user.firstName}</span>
+              )}{" "}
+              🤩
             </div>
             <Separator className="block xl:hidden" />
             <div className="flex xl:hidden text-lg xl:text-xl items-center justify-center gap-2 w-fit font-medium mt-2">

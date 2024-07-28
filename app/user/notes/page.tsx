@@ -22,7 +22,7 @@ const Notes = async () => {
           noted_by: user.id,
         },
         orderBy: {
-          xata_createdat: "desc",
+          xata_updatedat: "desc",
         },
         take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
       });
@@ -36,7 +36,7 @@ const Notes = async () => {
         noted_by: user.id,
       },
       orderBy: {
-        xata_createdat: "desc",
+        xata_updatedat: "desc",
       },
       take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
       skip: 1,

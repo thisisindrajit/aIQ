@@ -1,15 +1,6 @@
 import { EventSchemas, Inngest, InngestMiddleware } from "inngest";
 import { PrismaClient } from "@prisma/client";
-
-type TGenerateSnippet = {
-  data: {
-    searchQuery: string;
-    userId?: string | null;
-  };
-};
-type Events = {
-  "app/generate.snippet": TGenerateSnippet;
-};
+import { TEvents } from "@/types/TEvents";
 
 // make Prisma available in the Inngest functions
 const prismaMiddleware = new InngestMiddleware({
@@ -38,5 +29,5 @@ const prismaMiddleware = new InngestMiddleware({
 export const inngest = new Inngest({
   id: "aIQ",
   middleware: [prismaMiddleware],
-  schemas: new EventSchemas().fromRecord<Events>(),
+  schemas: new EventSchemas().fromRecord<TEvents>(),
 });

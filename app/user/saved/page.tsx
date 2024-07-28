@@ -14,91 +14,77 @@ const Saved = async () => {
     "use server";
 
     if (lastSnippetId === "0") {
-      return await prisma.snippets.findMany({
+      return await prisma.snippet_saves.findMany({
         include: {
-          snippet_type_and_data_mapping: {
+          snippets: {
             include: {
-              list_snippet_types: true,
-            },
-          },
-          snippet_likes: {
-            where: {
-              liked_by: {
-                equals: user.id,
+              snippet_type_and_data_mapping: {
+                include: {
+                  list_snippet_types: true,
+                },
+              },
+              snippet_likes: {
+                where: {
+                  liked_by: {
+                    equals: user.id,
+                  },
+                },
+              },
+              snippet_notes: {
+                where: {
+                  noted_by: {
+                    equals: user.id,
+                  },
+                },
               },
             },
-          },
-          snippet_notes: {
-            where: {
-              noted_by: {
-                equals: user.id,
-              },
-            },
-          },
-          snippet_saves: {
-            where: {
-              saved_by: {
-                equals: user.id,
-              },
-            },
-            orderBy: {
-              xata_createdat: "desc",
-            }
           },
         },
         where: {
-          snippet_saves: {
-            some: {
-              saved_by: user.id,
-            },
-          },
+          saved_by: user.id,
         },
         take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
+        orderBy: {
+          xata_id: "desc",
+        },
       });
     }
 
-    return await prisma.snippets.findMany({
+    return await prisma.snippet_saves.findMany({
       include: {
-        snippet_type_and_data_mapping: {
+        snippets: {
           include: {
-            list_snippet_types: true,
-          },
-        },
-        snippet_likes: {
-          where: {
-            liked_by: {
-              equals: user.id,
+            snippet_type_and_data_mapping: {
+              include: {
+                list_snippet_types: true,
+              },
+            },
+            snippet_likes: {
+              where: {
+                liked_by: {
+                  equals: user.id,
+                },
+              },
+            },
+            snippet_notes: {
+              where: {
+                noted_by: {
+                  equals: user.id,
+                },
+              },
             },
           },
-        },
-        snippet_notes: {
-          where: {
-            noted_by: {
-              equals: user.id,
-            },
-          },
-        },
-        snippet_saves: {
-          where: {
-            saved_by: {
-              equals: user.id,
-            },
-          },
-          orderBy: {
-            xata_createdat: "desc",
-          }
         },
       },
       where: {
-        snippet_saves: {
-          some: {
-            saved_by: user.id,
-          },
-        },
+        saved_by: user.id,
       },
       take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
       skip: 1,
       cursor: { xata_id: lastSnippetId },
+      orderBy: {
+        xata_id: "desc",
+      },
     });
   };
 
