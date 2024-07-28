@@ -44,7 +44,7 @@ const Dashboard = async () => {
           },
         },
         take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
-        orderBy: { xata_createdat: "desc" },
+        orderBy: { xata_id: "desc" },
       });
     }
 
@@ -80,7 +80,7 @@ const Dashboard = async () => {
       take: Number(process.env.NEXT_PUBLIC_NO_OF_RECORDS_TO_TAKE ?? 10),
       skip: 1,
       cursor: { xata_id: lastSnippetId },
-      orderBy: { xata_createdat: "desc" },
+      orderBy: { xata_id: "desc" },
     });
   };
 

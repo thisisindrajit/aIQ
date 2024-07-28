@@ -1,31 +1,14 @@
 "use client";
 
 import { FC, Fragment, useEffect } from "react";
-import { Prisma } from "@prisma/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useAuth } from "@clerk/nextjs";
 import Note from "../note/Note";
-
-type TNotes = Prisma.snippet_notesGetPayload<{
-  include: {
-    snippets: true;
-  };
-  where: {
-    noted_by: string;
-  };
-  orderBy: {
-    xata_createdat: "desc";
-  };
-  skip?: number;
-  take: number;
-  cursor?: {
-    xata_id: string;
-  };
-}>;
+import { TNote } from "@/types/TNote";
 
 const CNotesHolder: FC<{
-  getNotes: (lastNoteId: string) => Promise<TNotes[]>;
+  getNotes: (lastNoteId: string) => Promise<TNote[]>;
 }> = ({ getNotes }) => {
   const { userId } = useAuth();
   const { ref, inView } = useInView();
@@ -33,7 +16,7 @@ const CNotesHolder: FC<{
   const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["user-notes", userId],
-      queryFn: async ({ pageParam }): Promise<TNotes[]> =>
+      queryFn: async ({ pageParam }): Promise<TNote[]> =>
         await getNotes(pageParam),
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
@@ -41,7 +24,7 @@ const CNotesHolder: FC<{
       refetchInterval:
         Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000,
       refetchIntervalInBackground: true,
-      refetchOnMount: "always",
+      placeholderData: keepPreviousData,
     });
 
   useEffect(() => {

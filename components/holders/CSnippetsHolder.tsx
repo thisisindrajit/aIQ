@@ -2,69 +2,49 @@
 
 import { FC, Fragment, useEffect } from "react";
 import CSnippet from "../common/CSnippet";
-import { Prisma } from "@prisma/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { lowercaseKeys } from "@/utilities/commonUtilities";
 import { useAuth } from "@clerk/nextjs";
-
-type TSnippets = Prisma.snippetsGetPayload<{
-  include: {
-    snippet_type_and_data_mapping: {
-      include: {
-        list_snippet_types: true;
-      };
-    };
-    snippet_likes: {
-      where: {
-        liked_by: {
-          equals: string;
-        };
-      };
-    };
-    snippet_notes: {
-      where: {
-        noted_by: {
-          equals: string;
-        };
-      };
-    };
-    snippet_saves: {
-      where: {
-        saved_by: {
-          equals: string;
-        };
-      };
-    };
-  };
-  skip?: number;
-  take: number;
-  cursor?: {
-    xata_id: string;
-  };
-  orderBy: {
-    xata_createdat: "desc";
-  };
-}>;
+import { TSnippet } from "@/types/TSnippet";
 
 const CSnippetsHolder: FC<{
-  getSnippets: (lastSnippetId: string) => Promise<TSnippets[]>;
+  getSnippets: (lastSnippetId: string) => Promise<TSnippet[]>;
 }> = ({ getSnippets }) => {
   const { userId } = useAuth();
   const { ref, inView } = useInView();
+  const queryClient = useQueryClient();
+
+  const queryFnHandler: (pageParam: string) => Promise<TSnippet[]> = async (
+    pageParam
+  ) => {
+    const res = await getSnippets(pageParam);
+
+    if (res?.length > 0) {
+      res.map((snippet) => {
+        queryClient.setQueryData(["snippet", snippet.xata_id, userId], snippet);
+      });
+    }
+
+    return res;
+  };
 
   const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["trending-snippets", userId],
-      queryFn: async ({ pageParam }): Promise<TSnippets[]> =>
-        await getSnippets(pageParam),
+      queryFn: async ({ pageParam }): Promise<TSnippet[]> =>
+        await queryFnHandler(pageParam),
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
         lastPage?.length === 0 ? null : lastPage[lastPage.length - 1].xata_id,
       refetchInterval:
         Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000,
       refetchIntervalInBackground: true,
-      refetchOnMount: "always",
+      placeholderData: keepPreviousData,
     });
 
   useEffect(() => {

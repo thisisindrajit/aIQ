@@ -2,60 +2,14 @@
 
 import { FC, Fragment, useEffect } from "react";
 import CSnippet from "../common/CSnippet";
-import { Prisma } from "@prisma/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { lowercaseKeys } from "@/utilities/commonUtilities";
 import { useAuth } from "@clerk/nextjs";
-
-type TSavedSnippets = Prisma.snippetsGetPayload<{
-  include: {
-    snippet_type_and_data_mapping: {
-      include: {
-        list_snippet_types: true;
-      };
-    };
-    snippet_likes: {
-      where: {
-        liked_by: {
-          equals: string;
-        };
-      };
-    };
-    snippet_notes: {
-      where: {
-        noted_by: {
-          equals: string;
-        };
-      };
-    };
-    snippet_saves: {
-      where: {
-        saved_by: {
-          equals: string;
-        };
-      };
-      orderBy: {
-        xata_createdat: "desc",
-      };
-    };
-  };
-  where: {
-    snippet_saves: {
-      some: {
-        saved_by: string;
-      };
-    };
-  };
-  skip?: number;
-  take: number;
-  cursor?: {
-    xata_id: string;
-  };
-}>;
+import { TSavedSnippet } from "@/types/TSavedSnippet";
 
 const CSavedSnippetsHolder: FC<{
-  getSavedSnippets: (lastSnippetId: string) => Promise<TSavedSnippets[]>;
+  getSavedSnippets: (lastSnippetId: string) => Promise<TSavedSnippet[]>;
 }> = ({ getSavedSnippets }) => {
   const { userId } = useAuth();
   const { ref, inView } = useInView();
@@ -63,7 +17,7 @@ const CSavedSnippetsHolder: FC<{
   const { status, data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["user-saved-snippets", userId],
-      queryFn: async ({ pageParam }): Promise<TSavedSnippets[]> =>
+      queryFn: async ({ pageParam }): Promise<TSavedSnippet[]> =>
         await getSavedSnippets(pageParam),
       initialPageParam: "0",
       getNextPageParam: (lastPage) =>
@@ -71,7 +25,7 @@ const CSavedSnippetsHolder: FC<{
       refetchInterval:
         Number(process.env.REFETCH_INTERVAL_IN_SECONDS ?? 15) * 1000,
       refetchIntervalInBackground: true,
-      refetchOnMount: "always",
+      placeholderData: keepPreviousData,
     });
 
   useEffect(() => {
@@ -96,11 +50,11 @@ const CSavedSnippetsHolder: FC<{
             <Fragment>
               {data.pages.map((page, index) => (
                 <Fragment key={index}>
-                  {page.map((snippet) => {
+                  {page.map((saved_snippet) => {
                     const snippet5w1hData = lowercaseKeys(
                       JSON.parse(
                         JSON.stringify(
-                          snippet.snippet_type_and_data_mapping.filter(
+                          saved_snippet.snippets?.snippet_type_and_data_mapping.filter(
                             (x) =>
                               x.list_snippet_types?.snippet_type.toLowerCase() ===
                               "5w1h"
@@ -112,7 +66,7 @@ const CSavedSnippetsHolder: FC<{
                     const references = lowercaseKeys(
                       JSON.parse(
                         JSON.stringify(
-                          snippet.snippet_type_and_data_mapping.filter(
+                          saved_snippet.snippets?.snippet_type_and_data_mapping.filter(
                             (x) =>
                               x.list_snippet_types?.snippet_type.toLowerCase() ===
                               "5w1h"
@@ -123,14 +77,14 @@ const CSavedSnippetsHolder: FC<{
 
                     return (
                       <CSnippet
-                        key={snippet.xata_id}
-                        snippetId={snippet.xata_id}
+                        key={saved_snippet.snippets?.xata_id}
+                        snippetId={saved_snippet.snippets?.xata_id || ''}
                         showLinkIcon={true}
-                        generatedByAi={snippet.generated_by_ai || false}
-                        title={snippet.snippet_title}
-                        requestorName={snippet.requestor_name}
-                        requestedOn={snippet.xata_createdat}
-                        savedOn={snippet.snippet_saves[0].xata_createdat}
+                        generatedByAi={saved_snippet.snippets?.generated_by_ai || false}
+                        title={saved_snippet.snippets?.snippet_title || ''}
+                        requestorName={saved_snippet.snippets?.requestor_name || ''}
+                        requestedOn={saved_snippet.snippets?.xata_createdat || new Date()}
+                        savedOn={saved_snippet.xata_createdat}
                         whatOrWho={
                           snippet5w1hData["whatorwho"]?.length > 0 ||
                           snippet5w1hData["what"]?.length > 0 ||
@@ -170,11 +124,11 @@ const CSavedSnippetsHolder: FC<{
                             ? references.references
                             : []
                         }
-                        isLikedByUser={snippet.snippet_likes.length > 0}
-                        isSavedByUser={snippet.snippet_saves.length > 0}
+                        isLikedByUser={saved_snippet.snippets?.snippet_likes ? saved_snippet.snippets?.snippet_likes?.length > 0 : false}
+                        isSavedByUser={true}
                         note={
-                          snippet.snippet_notes.length > 0
-                            ? snippet.snippet_notes[0].note
+                          saved_snippet.snippets?.snippet_notes && saved_snippet.snippets?.snippet_notes?.length > 0
+                            ? saved_snippet.snippets?.snippet_notes[0].note
                             : ""
                         }
                       />

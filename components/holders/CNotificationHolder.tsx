@@ -10,24 +10,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Bell } from "lucide-react";
-import { Prisma } from "@prisma/client";
 import { convertToPrettyDateFormatInLocalTimezone } from "@/utilities/commonUtilities";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
 import { toast } from "sonner";
-
-type TUserNotification = Prisma.user_notificationsGetPayload<{
-  include: {
-    list_notification_types: true;
-  };
-  where: {
-    notification_receiver: string;
-  };
-  take: number;
-  orderBy: {
-    xata_createdat: "desc";
-  };
-}>;
+import { TUserNotification } from "@/types/TUserNotification";
 
 const CNotificationHolder: FC<{
   getNotificationsForUser: () => Promise<TUserNotification[]>;
